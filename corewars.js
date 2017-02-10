@@ -1,4 +1,3 @@
-
 var memory = new Uint8Array(256);
 
 /** 
@@ -38,15 +37,30 @@ function displayCPU (cpu) {
 
 	}
 
+	$("#cpu" +id +"PPC").html(d2h(cpu.ppc, 2));
 	$("#cpu" +id +"PC").html(d2h(cpu.pc, 2));
 	$("#cpu" +id +"IR").html(d2h(cpu.ir[0], 2) + d2h(cpu.ir[1], 2));
 	$("#cpu" +id +"OF").html(d2h(cpu.of, 2));
 
 	$("#cpu" +id +"status").html(cpu.status);
 
+	// pretty colors
+	var locations = [ 
+		d2h((cpu.ppc),2),
+		d2h((cpu.ppc+1),2),
+		d2h((cpu.pc),2),
+		d2h((cpu.pc+1),2),
+	];
 
+	console.log("L: " +JSON.stringify(locations));
 
+	if (cpu.ppc != null) {
+		$("#" +locations[0]).removeClass('td_current');
+		$("#" +locations[1]).removeClass('td_current');
+	}
 
+	$("#" +locations[2]).addClass('td_current');
+	$("#" +locations[3]).addClass('td_current');
 }
 
 
@@ -55,7 +69,6 @@ function refresh() {
 	displayMemory();
 	displayCPU(cpu0);
 	displayCPU(cpu1);
-
 }
 
 
@@ -174,7 +187,11 @@ CPU.prototype.execute = function(code) {
 
 			if (this.r[0] == this.r[code[1]]) {
 				// This will get incremented, so subtract 2
-				this.pc = parseInt(code[4])+this.of-2;
+				var location = (code[4] + this.of) % 256;
+
+
+				this.ppc=this.pc;
+				this.pc = parseInt(location);
 			}
 		break;
 
@@ -217,38 +234,16 @@ CPU.prototype.executeNext = function() {
 	}
 
 
-	var locations = [ 
-		d2h((this.ppc),2),
-		d2h((this.ppc+1),2),
-		d2h((this.pc),2),
-		d2h((this.pc+1),2),
-	];
-	/*
-	locations[0] = d2h(this.pc-2,2);
-	locations[1] = d2h(this.pc-1,2);
-	locations[2] = d2h(this.pc-0,2);
-	locations[3] = d2h(this.pc+1,2);*/
-
-	console.log("L: " +JSON.stringify(locations));
-
-	if (this.ppc != null) {
-		$("#" +locations[0]).removeClass('td_current');
-		$("#" +locations[1]).removeClass('td_current');
+	// jmp instruction, don't change ppc/pc since code did
+	if (code[0] != 0x0B) {
+		this.ppc=this.pc;
+		this.pc += 2;
 	}
-
-	$("#" +locations[2]).addClass('td_current');
-	$("#" +locations[3]).addClass('td_current');
-	//
-	//
-	this.ppc=this.pc;
-	this.pc += 2;
 
 };
 
 var cpu0 = new CPU(0,new Uint8Array(16));
 var cpu1 = new CPU(1,new Uint8Array(16));
-
-
 
 
 function loadProgram(id) {

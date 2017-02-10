@@ -37,7 +37,7 @@
 			runNextStep();
 		}
 
-		setTimeout(runSim, 100);
+		setTimeout(runSim, $("#cpuspeed").val()); //todo: check inputs
 	}
 
 
@@ -56,9 +56,6 @@
 	});
 
 </script>
-
-<hr width=75%>
-
 
 
 <!-- table contriner -->
@@ -84,6 +81,7 @@
 	<tr> <td>RE</td><td id="cpu0RE"></td> </tr>
 	<tr> <td>RF</td><td id="cpu0RF"></td> </tr>
 
+	<tr> <td>PPC</td><td id="cpu0PPC"></td> </tr>
 	<tr> <td>PC</td><td id="cpu0PC"></td> </tr>
 	<tr> <td>IR</td><td id="cpu0IR"></td> </tr>
 	<tr> <td>OF</td><td id="cpu0OF"></td> </tr>
@@ -447,6 +445,7 @@
 	<tr> <td>RE</td><td id="cpu1RE"></td> </tr>
 	<tr> <td>RF</td><td id="cpu1RF"></td> </tr>
 
+	<tr> <td>PPC</td><td id="cpu1PPC"></td> </tr>
 	<tr> <td>PC</td><td id="cpu1PC"></td> </tr>
 	<tr> <td>IR</td><td id="cpu1IR"></td> </tr>
 	<tr> <td>OF</td><td id="cpu1OF"></td> </tr>
@@ -487,12 +486,18 @@ halt</textarea>
 	<tr>
 		<td><button onclick="window.running=true; runSim();">RunSim</button></td>	
 	</tr>
+	</tr>
+		<td style="display: inline;white-space:nowrap;">Step Speed: <input size=5 type="text" id="cpuspeed" value="100"></input> (in ms)</td>
+	<tr>
 	<tr>
 		<td><button onclick="window.running=false; refresh;">break</button></td>	
 	</tr>
 	<tr>
 		<td><button onclick="window.running=false; runNextStep();">Step</button></td>	
 	</tr>
+
+
+
 </table>
 
 <table border="1">
