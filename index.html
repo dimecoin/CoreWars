@@ -1,0 +1,540 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title id="title">Core Wars</title>
+		
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+		<script src="corewars.js"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+<body>
+
+<script>
+
+	var turn = true;
+	var running=false;
+	function runNextStep() {
+
+		if (cpu0.halted || cpu1.halted) {
+			return;
+		}
+
+		if (window.turn) {
+			cpu0.executeNext();
+		} else {
+			cpu1.executeNext();
+		}
+
+		window.turn=!window.turn;
+		refresh();
+	}
+
+	function runSim () {
+
+		if (running) {
+			runNextStep();
+		}
+
+		setTimeout(runSim, 100);
+	}
+
+
+	$( document ).ready(function() {
+
+		console.log(memory);
+		console.log(JSON.stringify(cpu0));
+
+		loadProgram(0);
+		loadProgram(1);
+
+		runSim();
+
+		refresh();
+
+	});
+
+</script>
+
+<hr width=75%>
+
+
+
+<!-- table contriner -->
+<div class="container"> 
+
+<table id="cpu0" border="1">
+	<caption>CPU0</caption>
+	<tr> <td>status</td><td id="cpu0status"></td> </tr>
+	<tr> <td>R0</td><td id="cpu0R0"></td> </tr>
+	<tr> <td>R1</td><td id="cpu0R1"></td> </tr>
+	<tr> <td>R2</td><td id="cpu0R2"></td> </tr>
+	<tr> <td>R3</td><td id="cpu0R3"></td> </tr>
+	<tr> <td>R4</td><td id="cpu0R4"></td> </tr>
+	<tr> <td>R5</td><td id="cpu0R5"></td> </tr>
+	<tr> <td>R6</td><td id="cpu0R6"></td> </tr>
+	<tr> <td>R7</td><td id="cpu0R7"></td> </tr>
+	<tr> <td>R8</td><td id="cpu0R8"></td> </tr>
+	<tr> <td>R9</td><td id="cpu0R9"></td> </tr>
+	<tr> <td>RA</td><td id="cpu0RA"></td> </tr>
+	<tr> <td>RB</td><td id="cpu0RB"></td> </tr>
+	<tr> <td>RC</td><td id="cpu0RC"></td> </tr>
+	<tr> <td>RD</td><td id="cpu0RD"></td> </tr>
+	<tr> <td>RE</td><td id="cpu0RE"></td> </tr>
+	<tr> <td>RF</td><td id="cpu0RF"></td> </tr>
+
+	<tr> <td>PC</td><td id="cpu0PC"></td> </tr>
+	<tr> <td>IR</td><td id="cpu0IR"></td> </tr>
+	<tr> <td>OF</td><td id="cpu0OF"></td> </tr>
+</table>
+
+
+<table id="memoryTable" border="1" width="50%">
+	<caption>Memory</caption>
+	<tr>
+		<td></td>
+		<th scope="col">0..</th>
+		<th scope="col">1..</th>
+		<th scope="col">2..</th>
+		<th scope="col">3..</th>
+		<th scope="col">4..</th>
+		<th scope="col">5..</th>
+		<th scope="col">6..</th>
+		<th scope="col">7..</th>
+		<th scope="col">8..</th>
+		<th scope="col">9..</th>
+		<th scope="col">A..</th>
+		<th scope="col">B..</th>
+		<th scope="col">C..</th>
+		<th scope="col">D..</th>
+		<th scope="col">E..</th>
+		<th scope="col">F..</th>
+	</tr>
+
+	<tr>
+		<th scope="row">0</th>
+		<td id="00"></td>
+		<td id="01"></td>
+		<td id="02"></td>
+		<td id="03"></td>
+		<td id="04"></td>
+		<td id="05"></td>
+		<td id="06"></td>
+		<td id="07"></td>
+		<td id="08"></td>
+		<td id="09"></td>
+		<td id="0A"></td>
+		<td id="0B"></td>
+		<td id="0C"></td>
+		<td id="0D"></td>
+		<td id="0E"></td>
+		<td id="0F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">1</th>
+		<td id="10"></td>
+		<td id="11"></td>
+		<td id="12"></td>
+		<td id="13"></td>
+		<td id="14"></td>
+		<td id="15"></td>
+		<td id="16"></td>
+		<td id="17"></td>
+		<td id="18"></td>
+		<td id="19"></td>
+		<td id="1A"></td>
+		<td id="1B"></td>
+		<td id="1C"></td>
+		<td id="1D"></td>
+		<td id="1E"></td>
+		<td id="1F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">2</th>
+		<td id="20"></td>
+		<td id="21"></td>
+		<td id="22"></td>
+		<td id="23"></td>
+		<td id="24"></td>
+		<td id="25"></td>
+		<td id="26"></td>
+		<td id="27"></td>
+		<td id="28"></td>
+		<td id="29"></td>
+		<td id="2A"></td>
+		<td id="2B"></td>
+		<td id="2C"></td>
+		<td id="2D"></td>
+		<td id="2E"></td>
+		<td id="2F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">3</th>
+		<td id="30"></td>
+		<td id="31"></td>
+		<td id="32"></td>
+		<td id="33"></td>
+		<td id="34"></td>
+		<td id="35"></td>
+		<td id="36"></td>
+		<td id="37"></td>
+		<td id="38"></td>
+		<td id="39"></td>
+		<td id="3A"></td>
+		<td id="3B"></td>
+		<td id="3C"></td>
+		<td id="3D"></td>
+		<td id="3E"></td>
+		<td id="3F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">4</th>
+		<td id="40"></td>
+		<td id="41"></td>
+		<td id="42"></td>
+		<td id="43"></td>
+		<td id="44"></td>
+		<td id="45"></td>
+		<td id="46"></td>
+		<td id="47"></td>
+		<td id="48"></td>
+		<td id="49"></td>
+		<td id="4A"></td>
+		<td id="4B"></td>
+		<td id="4C"></td>
+		<td id="4D"></td>
+		<td id="4E"></td>
+		<td id="4F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">5</th>
+		<td id="50"></td>
+		<td id="51"></td>
+		<td id="52"></td>
+		<td id="53"></td>
+		<td id="54"></td>
+		<td id="55"></td>
+		<td id="56"></td>
+		<td id="57"></td>
+		<td id="58"></td>
+		<td id="59"></td>
+		<td id="5A"></td>
+		<td id="5B"></td>
+		<td id="5C"></td>
+		<td id="5D"></td>
+		<td id="5E"></td>
+		<td id="5F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">6</th>
+		<td id="60"></td>
+		<td id="61"></td>
+		<td id="62"></td>
+		<td id="63"></td>
+		<td id="64"></td>
+		<td id="65"></td>
+		<td id="66"></td>
+		<td id="67"></td>
+		<td id="68"></td>
+		<td id="69"></td>
+		<td id="6A"></td>
+		<td id="6B"></td>
+		<td id="6C"></td>
+		<td id="6D"></td>
+		<td id="6E"></td>
+		<td id="6F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">7</th>
+		<td id="70"></td>
+		<td id="71"></td>
+		<td id="72"></td>
+		<td id="73"></td>
+		<td id="74"></td>
+		<td id="75"></td>
+		<td id="76"></td>
+		<td id="77"></td>
+		<td id="78"></td>
+		<td id="79"></td>
+		<td id="7A"></td>
+		<td id="7B"></td>
+		<td id="7C"></td>
+		<td id="7D"></td>
+		<td id="7E"></td>
+		<td id="7F"></td>
+	</tr>
+
+	<tr>
+		<th scope="row">8</th>
+		<td id="80"></td>
+		<td id="81"></td>
+		<td id="82"></td>
+		<td id="83"></td>
+		<td id="84"></td>
+		<td id="85"></td>
+		<td id="86"></td>
+		<td id="87"></td>
+		<td id="88"></td>
+		<td id="89"></td>
+		<td id="8A"></td>
+		<td id="8B"></td>
+		<td id="8C"></td>
+		<td id="8D"></td>
+		<td id="8E"></td>
+		<td id="8F"></td>
+	</tr>
+	<tr>
+		<th scope="row">9</th>
+		<td id="90"></td>
+		<td id="91"></td>
+		<td id="92"></td>
+		<td id="93"></td>
+		<td id="94"></td>
+		<td id="95"></td>
+		<td id="96"></td>
+		<td id="97"></td>
+		<td id="98"></td>
+		<td id="99"></td>
+		<td id="9A"></td>
+		<td id="9B"></td>
+		<td id="9C"></td>
+		<td id="9D"></td>
+		<td id="9E"></td>
+		<td id="9F"></td>
+	</tr>
+	<tr>
+		<th scope="row">A</th>
+		<td id="A0"></td>
+		<td id="A1"></td>
+		<td id="A2"></td>
+		<td id="A3"></td>
+		<td id="A4"></td>
+		<td id="A5"></td>
+		<td id="A6"></td>
+		<td id="A7"></td>
+		<td id="A8"></td>
+		<td id="A9"></td>
+		<td id="AA"></td>
+		<td id="AB"></td>
+		<td id="AC"></td>
+		<td id="AD"></td>
+		<td id="AE"></td>
+		<td id="AF"></td>
+	</tr>
+	<tr>
+		<th scope="row">B</th>
+		<td id="B0"></td>
+		<td id="B1"></td>
+		<td id="B2"></td>
+		<td id="B3"></td>
+		<td id="B4"></td>
+		<td id="B5"></td>
+		<td id="B6"></td>
+		<td id="B7"></td>
+		<td id="B8"></td>
+		<td id="B9"></td>
+		<td id="BA"></td>
+		<td id="BB"></td>
+		<td id="BC"></td>
+		<td id="BD"></td>
+		<td id="BE"></td>
+		<td id="BF"></td>
+	</tr>
+	<tr>
+		<th scope="row">C</th>
+		<td id="C0"></td>
+		<td id="C1"></td>
+		<td id="C2"></td>
+		<td id="C3"></td>
+		<td id="C4"></td>
+		<td id="C5"></td>
+		<td id="C6"></td>
+		<td id="C7"></td>
+		<td id="C8"></td>
+		<td id="C9"></td>
+		<td id="CA"></td>
+		<td id="CB"></td>
+		<td id="CC"></td>
+		<td id="CD"></td>
+		<td id="CE"></td>
+		<td id="CF"></td>
+	</tr>
+	<tr>
+		<th scope="row">D</th>
+		<td id="D0"></td>
+		<td id="D1"></td>
+		<td id="D2"></td>
+		<td id="D3"></td>
+		<td id="D4"></td>
+		<td id="D5"></td>
+		<td id="D6"></td>
+		<td id="D7"></td>
+		<td id="D8"></td>
+		<td id="D9"></td>
+		<td id="DA"></td>
+		<td id="DB"></td>
+		<td id="DC"></td>
+		<td id="DD"></td>
+		<td id="DE"></td>
+		<td id="DF"></td>
+	</tr>
+	<tr>
+		<th scope="row">E</th>
+		<td id="E0"></td>
+		<td id="E1"></td>
+		<td id="E2"></td>
+		<td id="E3"></td>
+		<td id="E4"></td>
+		<td id="E5"></td>
+		<td id="E6"></td>
+		<td id="E7"></td>
+		<td id="E8"></td>
+		<td id="E9"></td>
+		<td id="EA"></td>
+		<td id="EB"></td>
+		<td id="EC"></td>
+		<td id="ED"></td>
+		<td id="EE"></td>
+		<td id="EF"></td>
+	</tr>
+	<tr>
+		<th scope="row">F</th>
+		<td id="F0"></td>
+		<td id="F1"></td>
+		<td id="F2"></td>
+		<td id="F3"></td>
+		<td id="F4"></td>
+		<td id="F5"></td>
+		<td id="F6"></td>
+		<td id="F7"></td>
+		<td id="F8"></td>
+		<td id="F9"></td>
+		<td id="FA"></td>
+		<td id="FB"></td>
+		<td id="FC"></td>
+		<td id="FD"></td>
+		<td id="FE"></td>
+		<td id="FF"></td>
+	</tr>
+
+</table>
+
+<table id="cpu1" border="1">
+	<caption>CPU0</caption>
+	<tr> <td>status</td><td id="cpu1status"></td> </tr>
+	<tr> <td>R0</td><td id="cpu1R0"></td> </tr>
+	<tr> <td>R1</td><td id="cpu1R1"></td> </tr>
+	<tr> <td>R2</td><td id="cpu1R2"></td> </tr>
+	<tr> <td>R3</td><td id="cpu1R3"></td> </tr>
+	<tr> <td>R4</td><td id="cpu1R4"></td> </tr>
+	<tr> <td>R5</td><td id="cpu1R5"></td> </tr>
+	<tr> <td>R6</td><td id="cpu1R6"></td> </tr>
+	<tr> <td>R7</td><td id="cpu1R7"></td> </tr>
+	<tr> <td>R8</td><td id="cpu1R8"></td> </tr>
+	<tr> <td>R9</td><td id="cpu1R9"></td> </tr>
+	<tr> <td>RA</td><td id="cpu1RA"></td> </tr>
+	<tr> <td>RB</td><td id="cpu1RB"></td> </tr>
+	<tr> <td>RC</td><td id="cpu1RC"></td> </tr>
+	<tr> <td>RD</td><td id="cpu1RD"></td> </tr>
+	<tr> <td>RE</td><td id="cpu1RE"></td> </tr>
+	<tr> <td>RF</td><td id="cpu1RF"></td> </tr>
+
+	<tr> <td>PC</td><td id="cpu1PC"></td> </tr>
+	<tr> <td>IR</td><td id="cpu1IR"></td> </tr>
+	<tr> <td>OF</td><td id="cpu1OF"></td> </tr>
+</table>
+
+</div>
+
+<div id="controls" class="container">
+
+<table border="1">
+	<tr><td>
+		<textarea id="program0input" rows="4" cols="50">
+load R1,[00] ; load memory
+load R4,0xFF ; load imm
+store R4, [0xD0]
+move R9,R4
+; test
+addi RA,R1,R1
+or RB, RA, RB
+and RC, RB, R4
+xor RD, RB, R4
+move RE, RD
+ror RE, 3
+ror RE, 7
+ror RE,13 
+;error 1,1
+jmpEQ R5=R0, 0x02
+halt</textarea>
+		</td>
+		<td><button onclick="loadProgram(0); refresh();">ReLoad</button></td>	
+	</tr>
+		<tr><td>
+			<textarea id="program0output" rows="4" cols="50"></textarea>
+		</td></tr>
+</table>
+
+<table id="globalControls">
+	<tr>
+		<td><button onclick="window.running=true; runSim();">RunSim</button></td>	
+	</tr>
+	<tr>
+		<td><button onclick="window.running=false; refresh;">break</button></td>	
+	</tr>
+	<tr>
+		<td><button onclick="window.running=false; runNextStep();">Step</button></td>	
+	</tr>
+</table>
+
+<table border="1">
+	<tr><td>
+		<textarea id="program1input" rows="4" cols="50">
+load R1,[00] ; load memory
+load R4,0xFF ; load imm
+store R4, [0xE0]
+move R9,R4
+; test
+addi RA,R1,R1
+or RB, RA, RB
+and RC, RB, R4
+xor RD, RB, R4
+move RE, RD
+ror RE, 3
+ror RE, 7
+ror RE,13 
+;error 1,1
+jmpEQ R5=R0, 0x00
+halt</textarea>
+		</td>
+		<td><button onclick="loadProgram(1); refresh();">ReLoad</button></td>	
+	</tr>
+		<tr><td>
+			<textarea id="program1output" rows="4" cols="50"></textarea>
+		</td></tr>
+</table>
+
+
+
+
+
+</div>
+
+</body>
+</html>
+
+
+
+
+</div>
+
+</body>
+</html>

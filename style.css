@@ -1,0 +1,21 @@
+
+table {
+	float:left;
+	table-layout:fixed;
+}
+td {
+	width: 20px;
+}
+
+#controls {
+	clear: both; float: left; display: block; position: relative;
+	width:100%;
+}
+
+
+.td_current {
+	background-color: lightblue;
+}
+
+
+
