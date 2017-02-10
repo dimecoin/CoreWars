@@ -13,8 +13,11 @@
 
 <script>
 
-	var turn = true;
 	var running=false;
+	// CPUs are executed in turns, one after another
+	// Randomly pick one to go first, out of fairiness.
+	var turn =  Math.random() >= 0.5;
+
 	function runNextStep() {
 
 		if (cpu0.halted || cpu1.halted) {
@@ -426,7 +429,7 @@
 </table>
 
 <table id="cpu1" border="1">
-	<caption>CPU0</caption>
+	<caption>CPU1</caption>
 	<tr> <td>status</td><td id="cpu1status"></td> </tr>
 	<tr> <td>R0</td><td id="cpu1R0"></td> </tr>
 	<tr> <td>R1</td><td id="cpu1R1"></td> </tr>
