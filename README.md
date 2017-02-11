@@ -29,12 +29,8 @@ See: http://www.anne-gert.nl/projects/simpsim/
 * Should `jmp` to labels be allowed?
 * Should databytes (db) be allowed?
 
-* Clear button for memory and cpu registers.
-
-
 * Interfaces is ulgy, needs a lot of work.
 * Add versioning key.
-* Allow setting of program offset per CPU (register 'of').
 * Keep track of cycle count
 * 0xFF instruction should have unique CPU status flag.
 * CPU Status flags should be enums
@@ -46,4 +42,8 @@ See: http://www.anne-gert.nl/projects/simpsim/
 
 * Better error handling for program assembler.
 * Better error handling on execution.
+
+### Done
+* Clear button for memory and cpu registers.
+* Allow setting of program offset per CPU (register 'of').
 

@@ -54,6 +54,9 @@
 
 		$("#currentcpuspeed").html(window.cpuspeed);
 
+		$("#memoryof0").val(cpu0.of);
+		$("#memoryof1").val(cpu1.of);
+
 
 		console.log(memory);
 		console.log(JSON.stringify(cpu0));
@@ -67,6 +70,13 @@
 
 	});
 
+
+	// helper function to break... used a lot.
+	function haltSim() {
+		window.running=false; 
+		$("#button_runsim").prop("disabled",false);
+		$("#button_step").prop("disabled",false);
+	}
 
 	// helper function for global buttons.
 	function buttonClick(button) {
@@ -83,9 +93,7 @@
 			break;
 
 			case "button_break":
-				window.running=false; 
-				$("#button_runsim").prop("disabled",false);
-				$("#button_step").prop("disabled",false);
+				window.haltSim(); // halt simulation
 			break;
 
 			case "button_step":
@@ -97,10 +105,79 @@
 			case "button_cpuspeed":
 				var val = $("#cpuspeed").val();
 
-
 				window.cpuspeed=val;
-				$("#currentcpuspeed").html(val);
+				$("#currentcpuspeed").html(window.cpuspeed);
 			break;
+
+			case "button_clearmemory":
+				window.haltSim(); // halt simulation
+				window.clearMemory();
+			break;
+
+			case "load0": 
+				loadProgram(0);
+			break;
+
+			case "load1": 
+				loadProgram(1);
+			break;
+
+			case "button_memoryof0":
+			case "button_memoryof1":
+
+				var c = button.match(/button_memoryof([0-9])/);
+				var cpuid = parseInt(c[1]);
+
+				var val = $("#memoryof" +cpuid).val();
+
+				if (val < 0 || val > 255) {
+					alert ("Valule needs to be 0 - 255");
+				}
+
+				selector.val(val);
+
+				window.clearMemory();
+				(cpuid == 0) ?  window.cpu0.of = val : window.cpu1.of = val;
+				// reload both to make it user friendly
+				loadProgram(0);
+				loadProgram(1);
+
+			break;
+
+			case "button_resetcpu0":
+			case "button_resetcpu1":
+
+				window.haltSim(); // halt simulation
+
+				var c = button.match(/button_resetcpu([0-9])/);
+				var cpuid = parseInt(c[1]);
+
+				var cpu = (cpuid == 0) ?  window.cpu0 : window.cpu1;
+				resetCPU(cpu);
+
+				// reloading to clear memory colors
+				loadProgram(cpuid);
+
+			break;
+
+			case "button_resetcpus":
+				window.haltSim(); // halt simulation
+				resetCPU(cpu0);
+				resetCPU(cpu1);
+				loadProgram(0);
+				loadProgram(1);
+			break;
+			case "button_resetall":
+				window.haltSim(); // halt simulation
+				clearMemory();
+				resetCPU(cpu0);
+				resetCPU(cpu1);
+				loadProgram(0);
+				loadProgram(1);
+
+			break;
+
+
 		}
 
 		refresh();
@@ -525,9 +602,21 @@ ror RE,13
 ;error 1,1
 jmpEQ R5=R0, 0x02
 halt</textarea>
-		</td>
-		<td><button onclick="loadProgram(0); refresh();">ReLoad</button></td>	
-	</tr>
+</td>
+
+	<td>
+		<button id="load0" onclick="window.buttonClick(this.id);">Reload</button>
+		<br>
+
+		Memory Offset: <input id="memoryof0" size="4" type="number" value="0x00">
+		<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
+		<br>
+		<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
+
+	</td>	
+	
+
+</tr>
 		<tr><td>
 			<textarea id="program0output" rows="4" cols="50"></textarea>
 		</td></tr>
@@ -539,7 +628,7 @@ halt</textarea>
 	</tr>
 	</tr>
 	<tr>
-		<td style="display: inline;white-space:nowrap;">Current Step:<div style="display: inline;" id="currentcpuspeed">250</div> (in ms)</td>
+		<td style="display: inline;white-space:nowrap;">Current Step:<div style="display: inline;" id="currentcpuspeed"></div> (in ms)</td>
 	<tr>
 	<tr>
 		<td style="display: inline;white-space:nowrap;">
@@ -552,7 +641,16 @@ halt</textarea>
 	<tr>
 		<td><button id="button_step" onclick="window.buttonClick(this.id);">step</button></td>	
 	</tr>
+	<tr>
+		<td><button id="button_clearmemory" onclick="window.buttonClick(this.id);">Clear Memory</button></td>	
+	</tr>
+	<tr>
+		<td><button id="button_resetcpus" onclick="window.buttonClick(this.id);">Reset CPUS</button></td>	
+	</tr>
 
+	<tr>
+		<td><button id="button_resetall" onclick="window.buttonClick(this.id);">Reset/Reload All</button></td>	
+	</tr>
 
 
 </table>
@@ -577,7 +675,13 @@ ror RE,13
 jmpEQ R5=R0, 0x00
 halt</textarea>
 		</td>
-		<td><button onclick="loadProgram(1); refresh();">ReLoad</button></td>	
+		<td>
+			<button id="load1" onclick="window.buttonClick(this.id);">Reload</button>
+			Memory Offset: <input id="memoryof1" size="4" type="number" value="0x00">
+			<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
+			<br>
+			<button id="button_resetcpu1" onclick="window.buttonClick(this.id);">Reset CPU</button>
+		</td>	
 	</tr>
 		<tr><td>
 			<textarea id="program1output" rows="4" cols="50"></textarea>

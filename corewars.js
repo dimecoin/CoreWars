@@ -1,5 +1,35 @@
 var memory = new Uint8Array(256);
 
+function clearMemory() {
+
+	for (var i=0; i<256; i++) {
+		memory[i] = 0x00;
+		$("#" +d2h(i,2)).css("background-color", "white");
+	}
+}
+
+// We reset everything, except for memory offset.
+function resetCPU(cpu) {
+
+	for (var i=0; i<16; i++) {
+		cpu.r[i]=0x00; 
+	}
+
+	cpu.ir[0] = 0x00;
+	cpu.ir[1] = 0x00;
+
+	cpu.pc=cpu.of;
+	cpu.ppc=null;
+
+	cpu.halted=false;
+	cpu.status = "ready"; 
+}
+
+
+
+
+
+
 /** 
 * Convert dec to hex 
 * see: http://stackoverflow.com/a/17204359
@@ -34,13 +64,20 @@ function displayCPU (cpu) {
 	for (var i=0; i<16; i++) {
 		var name = "cpu" +id +"R" +d2h(i,1);
 		$("#" +name).html(d2h(cpu.r[i], 2));
+		if (cpu.r[i] != 0x00) {
+			$("#" +name).css("background-color", "lightgray");
+		}
 
 	}
 
 	$("#cpu" +id +"PPC").html(d2h(cpu.ppc, 2));
 	$("#cpu" +id +"PC").html(d2h(cpu.pc, 2));
+	$("#cpu" +id +"PC").css("background-color", cpu.hlcolor);
+
+
 	$("#cpu" +id +"IR").html(d2h(cpu.ir[0], 2) + d2h(cpu.ir[1], 2));
 	$("#cpu" +id +"OF").html(d2h(cpu.of, 2));
+	$("#cpu" +id +"OF").css("background-color", cpu.color);
 
 	$("#cpu" +id +"status").html(cpu.status);
 
@@ -55,12 +92,13 @@ function displayCPU (cpu) {
 	console.log("L: " +JSON.stringify(locations));
 
 	if (cpu.ppc != null) {
-		$("#" +locations[0]).removeClass('td_current');
-		$("#" +locations[1]).removeClass('td_current');
+		$("#" +locations[0]).css("background-color", cpu.color);
+		$("#" +locations[1]).css("background-color", cpu.color);
 	}
 
-	$("#" +locations[2]).addClass('td_current');
-	$("#" +locations[3]).addClass('td_current');
+	$("#" +locations[2]).css("background-color", cpu.hlcolor);
+	$("#" +locations[3]).css("background-color", cpu.hlcolor);
+
 }
 
 
@@ -84,7 +122,10 @@ function CPU(id, r) {
 	this.ppc=null; // previous program counter
 
 	this.halted=false;
-	this.status = "ready_state"; //TODO: should be enum
+	this.status = "ready"; //TODO: should be enum
+
+	this.color=(id ==0) ? "lightblue" : "thistle";
+	this.hlcolor=(id ==0) ? "steelblue" : "mediumpurple";
 
 }
 
@@ -239,9 +280,9 @@ CPU.prototype.executeNext = function() {
 	var rc = this.execute(code);
 
 	if (!this.halted && rc) {
-		this.status="running_state";
+		this.status="running";
 	} else if (!this.halted && !rc) {
-		this.status="error_state";
+		this.status="error";
 		this.halted=true;
 		printError(this.id, "Error in code execution! " +JSON.stringify(code));
 	}
@@ -260,6 +301,8 @@ var cpu1 = new CPU(1,new Uint8Array(16));
 
 
 function loadProgram(id) {
+
+	var cpu = (id === 0) ? cpu0 : cpu1;
 
 	var code = new Uint8Array(128);
 	var currentLine = 0;
@@ -297,14 +340,37 @@ function loadProgram(id) {
 	}
 
 	console.log("##############################");
-	var offset = (id === 0) ? cpu0.of : cpu1.of;
-	console.log( "Memory offset for cpu: " +id + " Offset: " +offset);
+	var offset = cpu.of;
+
+	var location = (offset) % 256;
+
+	console.log( "Memory offset for cpu: " +id + " Offset: " +d2h(offset,2) +" Location: " +location);
 	for (var  i=0; i<128; i++) {
-		memory[offset+i] = code[i];
-		console.log("Code: " +code[i]);
+
+
+		// Wrap around to start if we overflow.
+		var oflocation = (location+i)%256;
+
+
+		// probably shouldn't have this here?
+
+		// TODO: very ulgy hack.  This highlights our program memory, but don't want to highlight 0x00 instructions.
+		// WARNING: this also prevents us from writing 0x00 into the other programs space... since we can get 128 bytes in size
+		// if both programs are large enough and overlap, we can overwrite each other with code.. that is acceptable..
+		// but should not ever "zero out" the other program.
+		if (!(code[i] == 0x00 && code[i+1] == 0x00) && i != 127) {	
+	
+			memory[oflocation] = code[i];
+
+			var htmllocation = d2h(oflocation,2);	
+			$("#" +htmllocation).css("background-color", cpu.color);
+		}
 	}
 
+	// Set PC to starting location
 
+	cpu.ppc=null;
+	cpu.pc=location;
 }
 
 // retruns an opt code based on instruction.
