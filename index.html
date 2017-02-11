@@ -18,6 +18,8 @@
 	// Randomly pick one to go first, out of fairiness.
 	var turn =  Math.random() >= 0.5;
 
+	var cpuspeed = 250;
+
 	function runNextStep() {
 
 		if (cpu0.halted || cpu1.halted) {
@@ -36,15 +38,22 @@
 
 	function runSim () {
 
-		if (running) {
-			runNextStep();
+		if (!running) {
+			return;
 		}
 
-		setTimeout(runSim, $("#cpuspeed").val()); //todo: check inputs
+			runNextStep();
+			setTimeout(runSim, cpuspeed);
 	}
 
 
 	$( document ).ready(function() {
+
+		$("#button_runsim").prop("disabled",false);
+		$("#button_step").prop("disabled",false);
+
+		$("#currentcpuspeed").html(window.cpuspeed);
+
 
 		console.log(memory);
 		console.log(JSON.stringify(cpu0));
@@ -57,6 +66,49 @@
 		refresh();
 
 	});
+
+
+	// helper function for global buttons.
+	function buttonClick(button) {
+
+		var selector = $("#" +button);
+
+		switch(button) {
+
+			case "button_runsim":
+				window.running=true;
+				$("#button_runsim").prop("disabled",true);
+				$("#button_step").prop("disabled",true);
+				window.runSim();
+			break;
+
+			case "button_break":
+				window.running=false; 
+				$("#button_runsim").prop("disabled",false);
+				$("#button_step").prop("disabled",false);
+			break;
+
+			case "button_step":
+				window.running=false; 
+				$("#button_runsim").prop("disabled",false);
+				runNextStep();
+			break;
+
+			case "button_cpuspeed":
+				var val = $("#cpuspeed").val();
+
+
+				window.cpuspeed=val;
+				$("#currentcpuspeed").html(val);
+			break;
+
+
+		}
+
+
+
+		refresh();
+	}
 
 </script>
 
@@ -487,16 +539,22 @@ halt</textarea>
 
 <table id="globalControls">
 	<tr>
-		<td><button onclick="window.running=true; runSim();">RunSim</button></td>	
+		<td><button id="button_runsim" onclick="window.buttonClick(this.id);">Run Simulation</button></td>	
 	</tr>
 	</tr>
-		<td style="display: inline;white-space:nowrap;">Step Speed: <input size=5 type="text" id="cpuspeed" value="100"></input> (in ms)</td>
+	<tr>
+		<td style="display: inline;white-space:nowrap;">Current Step:<div style="display: inline;" id="currentcpuspeed">250</div> (in ms)</td>
 	<tr>
 	<tr>
-		<td><button onclick="window.running=false; refresh;">break</button></td>	
+		<td style="display: inline;white-space:nowrap;">
+			Step Speed: <input id="cpuspeed" size="4" type="number" value="250">
+			<button id="button_cpuspeed" onclick="window.buttonClick(this.id);">Set</button></td>	
+		</td>
+	<tr>
+		<td><button id="button_break" onclick="window.buttonClick(this.id);">break</button></td>	
 	</tr>
 	<tr>
-		<td><button onclick="window.running=false; runNextStep();">Step</button></td>	
+		<td><button id="button_step" onclick="window.buttonClick(this.id);">step</button></td>	
 	</tr>
 
 
