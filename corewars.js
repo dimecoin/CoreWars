@@ -131,7 +131,7 @@ CPU.prototype.execute = function(code) {
 
 		case 3:
 			var location = (code[4] + this.of) % 256;
-			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
+			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
 		break;
 
@@ -209,8 +209,7 @@ CPU.prototype.execute = function(code) {
 		case 14:
 
 			var location = (this.r[code[4]] + this.of) % 256;
-
-			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
+			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
 		break;
 
