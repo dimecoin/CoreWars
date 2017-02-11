@@ -29,6 +29,9 @@ See: http://www.anne-gert.nl/projects/simpsim/
 * Should `jmp` to labels be allowed?
 * Should databytes (db) be allowed?
 
+* Clear button for memory and cpu registers.
+
+
 * Interfaces is ulgy, needs a lot of work.
 * Add versioning key.
 * Allow setting of program offset per CPU (register 'of').

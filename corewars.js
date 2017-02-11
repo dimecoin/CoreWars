@@ -131,7 +131,7 @@ CPU.prototype.execute = function(code) {
 
 		case 3:
 			var location = (code[4] + this.of) % 256;
-			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
+			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
 		break;
 
@@ -140,7 +140,12 @@ CPU.prototype.execute = function(code) {
 		break;
 		
 		case 5: //ADDI
-			this.r[code[1]] = this.r[code[2]] + this.r[code[3]];
+			var number1 = this.r[code[2]];
+			var number2 = this.r[code[3]];
+			var answer = number1 + number2;
+
+			console.log("Adding " +number1 +" + " +number2 +" = " +answer);
+			this.r[code[1]] = answer;
 		break;
 
 		case 6: // ADDF
@@ -198,6 +203,15 @@ CPU.prototype.execute = function(code) {
 		case 12:
 			this.halted=true;
 			this.status="halted";
+		break;
+
+
+		case 14:
+
+			var location = (this.r[code[4]] + this.of) % 256;
+
+			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
+			window.memory[location] = this.r[code[1]];
 		break;
 
 		// invalid instruction
@@ -264,14 +278,14 @@ function loadProgram(id) {
 		var line = lines[i].split(';')[0];
 
 		// strip out blank lines
-		if (line.length === 0) {
+		if (!line || line.length < 4) {
 			continue;
 		}
 
 		console.log("----------------------");
-		console.log("Line: " +line);
+		console.log("Line: #" +line +"#");
 		var machineCode = getMachineCode(line);
-		if (machineCode[0] == 0xE0) {
+		if (machineCode[0] == 0x00) {
 			printError(id, "Error loading program! Line: " +line +" Code: " +JSON.stringify(machineCode));
 		}
 		//console.log("Mach: " +d2h(getMachineCode(line)[0],2) +d2h(getMachineCode(line)[1],2));
@@ -302,7 +316,7 @@ function getOptCode(line) {
 	switch (line) {
 		case "loadm": return (1); break; // special case, overloading opcode
 		case "load": return (2); break;
-		case "store": return (3); break;
+		case "storem": return (3); break;
 		case "move": return (4); break;
 		case "addi": return (5); break;
 		case "addf": return (6); break;
@@ -313,6 +327,7 @@ function getOptCode(line) {
 		case "jmp": return (11); break;
 		case "jmpeq": return (11); break;
 		case "halt": return (12); break;
+		case "store": return (14); break;
 	}
 
 	// invalid instruction
@@ -327,7 +342,8 @@ function getMachineCode(line) {
 	var memOnly = false;
 
 	var instruction = line.split(' ')[0];
-	console.log("instruction: " +instruction);
+	instruction  = instruction.replace(/\t|\s/, "");
+	console.log("instruction: #" +instruction +"#");
 
 	// Special cases, just return so don't have to keep checking.
 	if (instruction === "halt") {
@@ -341,7 +357,10 @@ function getMachineCode(line) {
 		console.log("Reg: " +reg[1]);
 		machineCode[0] = 0xB0 | reg[1];
 
-		machineCode[1] = line.split(/,/)[1];
+		var location = line.split(/,/)[1];
+		console.log("Location: "+location);
+
+		machineCode[1] = location;
 		return (machineCode);
 	}
 
@@ -351,7 +370,7 @@ function getMachineCode(line) {
 	
 	// Need to strip out user spaces.
 	secondHalf = secondHalf.replace(instruction, "");
-	secondHalf.replace(" ", "");
+	secondHalf = secondHalf.replace(/\t|\s/, "");
 
 	// Determine number of parameters based on commas
 	var parameters = secondHalf.match(/,/g).length+1;
@@ -372,9 +391,12 @@ function getMachineCode(line) {
 		secondHalf = secondHalf.replace("]", "");
 	}
 
+
 	var operands = secondHalf.split(/,/);
+	console.log("Second Half: " +secondHalf +" Operands: " +JSON.stringify(operands));
 
 	for (var i=0; i<operands.length; i++) {
+
 		operands[i] = operands[i].replace(" ", "");
 		operands[i] = operands[i].replace("r", "");
 
@@ -386,9 +408,13 @@ function getMachineCode(line) {
 	}
 
 
-	if (memOnly && instruction == "load") { 
+	if (memOnly && instruction == "load") {
 		instruction += "m";
 	}
+	if (instruction == "store" && regops == 1) {
+		instruction +="m";
+	}
+
 	var opCode = getOptCode(instruction);
 	
 	console.log("opCode: " +opCode +" Operands: " +JSON.stringify(operands) 
