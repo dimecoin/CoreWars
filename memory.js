@@ -16,6 +16,11 @@ Uint8Array.prototype.reset = function() {
 	for (var i=0; i<256; i++) {
 		$("#" +d2h(i,2)).css("background-color", "white");
 	}
+
+
+
+
+
 }
 
 /**
@@ -30,9 +35,22 @@ Uint8Array.prototype.display = function() {
 		var data = d2h(memory[i],2);
 		
 		$("#" +location).html(data);
+
+		// TODO: add memory colors here.
 		
-		//$("#" +d2h(i,2)).css("background-color", "white");
-		
+		// TODO: shouldn't color these if inside code.
+		if (i%2 == 0 && memory[i] == 0xFF) {
+			$("#" +d2h(i,2)).css("color", "red");
+			$("#" +d2h(i,2)).css("font-weight", "bold");
+		} else if (memory[i] == 0x00) {
+			$("#" +d2h(i,2)).css("color", "lightgrey");
+			$("#" +d2h(i,2)).css("font-weight", "normal");
+		} else {
+			$("#" +d2h(i,2)).css("color", "black");
+			$("#" +d2h(i,2)).css("font-weight", "normal");
+		}
+
+
 	}
 
 	// TODO: Should add colors (white or cpu color) when refreshed.
