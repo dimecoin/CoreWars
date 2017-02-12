@@ -25,6 +25,7 @@ function CPU(id) {
 	this.ppc=null; // previous program counter
 
 	this.halted=false;
+	this.disabled = false;
 	this.status = "ready"; //TODO: should be enum
 
 	this.color=(id ==0) ? "lightblue" : "thistle";
@@ -51,6 +52,7 @@ CPU.prototype.reset = function() {
 	this.pl = 0x00;
 
 	this.halted=false;
+	//this.disabled = false;
 	this.status = "ready"; 
 
 	this.labels = [];
@@ -241,8 +243,10 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 14:
-			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
-			window.memory[location] = this.r[code[1]];
+			var value = this.r[code[2]];
+			var location = this.r[code[3]];
+			console.log(this.id, "Storing value: " +value +" to memory location: " +location);
+			window.memory[location] = value;
 		break;
 
 		// invalid instruction

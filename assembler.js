@@ -222,9 +222,13 @@ function getMachineCode(cpu, line) {
 	}
 
 	if (secondHalf.match(/\[/)) {
-		memOnly = true;
 		secondHalf = secondHalf.replace("[", "");
 		secondHalf = secondHalf.replace("]", "");
+
+		// This is a memory operation if there are brakcets and only 1 registor detected in operands.
+		if (regops == 1) {
+			memOnly=true;
+		}
 	}
 
 
@@ -274,6 +278,11 @@ function getMachineCode(cpu, line) {
 			machineCode[0] = (opCode << 4);
 			// flip them... ?? This is what simple sim does.
 			machineCode[1] = (operands[1]<<4) | operands[0];
+
+			// exepct for store... lol
+			if (instruction == "store") {
+			machineCode[1] = (operands[0]<<4) | operands[1];
+			}
 		}
 
 		if (regops == 3) {

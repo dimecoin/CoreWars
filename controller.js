@@ -126,6 +126,28 @@ function buttonClick(button) {
 			loadProgram(1);
 		break;
 
+		case "disablecpu1":
+
+			cpu1.disabled = !cpu1.disabled;
+			if (cpu1.disabled) {
+				cpu1.status="disabled";
+				$("#tablecpu1").css("background-color", "dimgray");
+				$("#tablecpu1controls").css("background-color", "dimgray");
+			} else {
+				cpu1.status="ready";
+				$("#tablecpu1").css("background-color", "white");
+				$("#tablecpu1controls").css("background-color", "white");
+			}
+			
+
+
+
+
+
+
+
+		break;
+
 
 	}
 

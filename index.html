@@ -39,7 +39,7 @@
 <!-- table contriner -->
 <div class="container"> 
 
-<table id="cpu0" border="1">
+<table id="tablecpu0" border="1">
 	<caption>CPU0</caption>
 	<tr> <td>status</td><td id="cpu0status"></td> </tr>
 	<tr> <td>R0</td><td id="cpu0R0"></td> </tr>
@@ -403,7 +403,7 @@
 
 </table>
 
-<table id="cpu1" border="1">
+<table id="tablecpu1" border="1">
 	<caption>CPU1</caption>
 	<tr> <td>status</td><td id="cpu1status"></td> </tr>
 	<tr> <td>R0</td><td id="cpu1R0"></td> </tr>
@@ -514,7 +514,7 @@ halt</textarea>
 
 </table>
 
-<table border="1">
+<table id="tablecpu1controls" border="1" >
 	<tr><td>
 		<textarea id="program1input" rows="4" cols="50">
 load R1,[00] ; load memory
@@ -533,16 +533,19 @@ ror RE,13
 ;error 1,1
 jmpEQ R0=R0, 0x00
 halt</textarea>
-		</td>
+</td>
 		<td>
-			<button id="load1" onclick="window.buttonClick(this.id);">Reload</button>
+			<button id="load1" onclick="window.buttonClick(this.id);">Reload</button><br>
 			Memory Offset: <input id="memoryof1" size="4" type="number" value="0x00">
 			<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
 			<br>
 			<button id="button_resetcpu1" onclick="window.buttonClick(this.id);">Reset CPU</button>
+			<br>
+			<button id="disablecpu1" onclick="window.buttonClick(this.id);">Enable/Disable CPU</button>
 		</td>	
 	</tr>
-		<tr><td>
+		<tr>
+			<td>
 			<textarea id="program1output" rows="4" cols="50"></textarea>
 		</td></tr>
 </table>

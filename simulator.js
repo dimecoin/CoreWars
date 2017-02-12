@@ -75,13 +75,19 @@ Simulator.prototype.runNextStep = function() {
 		return;
 	}
 
-	if (this.turn) {
+	// We are running in single CPU mode
+	if (cpu1.disabled) {
 		cpu0.executeNext();
 	} else {
-		cpu1.executeNext();
-	}
+		// Dual CPU mode.
+		if (this.turn) {
+			cpu0.executeNext();
+		} else {
+			cpu1.executeNext();
+		}
 
-	this.turn=!this.turn;
+		this.turn=!this.turn;
+	}
 
 	// Update our screen, not sure if this belongs here.
 	this.display();
