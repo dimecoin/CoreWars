@@ -11,16 +11,6 @@ var memory = new Uint8Array(256);
 */
 Uint8Array.prototype.reset = function() { 
 	this.fill(0x00);
-	
-	// TODO: this color coding should not go here.
-	for (var i=0; i<256; i++) {
-		$("#" +d2h(i,2)).css("background-color", "white");
-	}
-
-
-
-
-
 }
 
 /**
@@ -36,21 +26,44 @@ Uint8Array.prototype.display = function() {
 		
 		$("#" +location).html(data);
 
-		// TODO: add memory colors here.
-		
-		// TODO: shouldn't color these if inside code.
+		// player memory space colors
+
+		$("#" +d2h(i,2)).css("background-color", "white");
+		for (var c=0; c<2; c++) {
+			var cpu = (c==0) ? cpu0 : cpu1;
+
+			if (cpu.programMap[i]) { 
+				$("#" +location).css("background-color", cpu.color); 
+			}
+		}
+
+
+		// Bomb will only explode if on even memory.
+		// Can cause bugs if on odd, but won't cause a hard crash
 		if (i%2 == 0 && memory[i] == 0xFF) {
 			$("#" +d2h(i,2)).css("color", "red");
 			$("#" +d2h(i,2)).css("font-weight", "bold");
 		} else if (memory[i] == 0x00) {
-			$("#" +d2h(i,2)).css("color", "lightgrey");
-			$("#" +d2h(i,2)).css("font-weight", "normal");
+
+			// This is player code, not clear memory.  Don't highlight it.
+			if (!cpu0.programMap[i] && !cpu1.programMap[i]) {
+				$("#" +d2h(i,2)).css("color", "lightgrey");
+				$("#" +d2h(i,2)).css("font-weight", "normal");
+			}
+
 		} else {
 			$("#" +d2h(i,2)).css("color", "black");
 			$("#" +d2h(i,2)).css("font-weight", "normal");
 		}
 
 
+	}
+
+	// Highlight current instruction that cpus are on.
+	for (var c=0; c<2; c++) {
+		var cpu = (c==0) ? cpu0 : cpu1;
+		$("#" +d2h(cpu.pc, 2)).css("background-color", cpu.hlcolor);
+		$("#" +d2h(cpu.pc+1, 2)).css("background-color", cpu.hlcolor);
 	}
 
 	// TODO: Should add colors (white or cpu color) when refreshed.

@@ -37,6 +37,14 @@ function CPU(id) {
 	// Label addresses 
 	this.labels = [];
 
+	// memory is shared, but we assume each player has their own program.
+	// This keeps track of it.  It also will be updated if player writes to memory location.
+	// It's mostly used for pretty colors, so we know to render them.
+	this.programMap = [];
+	for (var i=0; i<256; i++) {
+		this.programMap[i] = false;
+	}
+
 }
 
 /**
@@ -59,6 +67,10 @@ CPU.prototype.reset = function() {
 	this.status = (this.disabled) ? "disabled" : "ready"; 
 
 	this.labels = [];
+
+	for (var i=0; i<256; i++) {
+		this.programMap[i] = false;
+	}
 }
 
 /**
@@ -91,24 +103,6 @@ CPU.prototype.display = function () {
 	$("#cpu" +this.id +"OF").css("background-color", this.color);
 
 	$("#cpu" +this.id +"status").html(this.status);
-
-	// Add pretty colors to program and previous program counter.
-	var locations = [ 
-		d2h((this.ppc),2),
-		d2h((this.ppc+1),2),
-		d2h((this.pc),2),
-		d2h((this.pc+1),2),
-	];
-
-	console.log("L: " +JSON.stringify(locations));
-
-	if (this.ppc != null) {
-		$("#" +locations[0]).css("background-color", this.color);
-		$("#" +locations[1]).css("background-color", this.color);
-	}
-
-	$("#" +locations[2]).css("background-color", this.hlcolor);
-	$("#" +locations[3]).css("background-color", this.hlcolor);
 
 }
 
@@ -176,6 +170,7 @@ CPU.prototype.execute = function(code) {
 		case 3: // STORE
 			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
+			this.programMap[location] = true;
 		break;
 
 		case 4: // MOVE
@@ -250,6 +245,8 @@ CPU.prototype.execute = function(code) {
 			var location = this.r[code[3]];
 			console.log(this.id, "Storing value: " +value +" to memory location: " +location);
 			window.memory[location] = value;
+
+			this.programMap[location] = true;
 		break;
 
 		// invalid instruction

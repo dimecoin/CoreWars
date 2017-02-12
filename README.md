@@ -39,10 +39,13 @@ See: http://www.anne-gert.nl/projects/simpsim/
 * Better error handling on execution.
 * Clean up javascript console.
 
+
 ### Done
 * Clear button for memory and cpu registers.
 * Allow setting of program offset per CPU (register 'of').
 * Add versioning key.
 * code needs a major clean up.
 * `jmp` to labels needs to be added.
+* Seperate rendering and logic code
+* Keep track of all memory that cpu writes too (so it can highlight it).
 

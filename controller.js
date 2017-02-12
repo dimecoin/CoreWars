@@ -72,18 +72,22 @@ function buttonClick(button) {
 
 			var c = button.match(/button_memoryof([0-9])/);
 			var cpuid = parseInt(c[1]);
+			var cpu = (cpuid == 0) ? cpu0 : cpu1;
 
 			var val = $("#memoryof" +cpuid).val();
 
-			if (val < 0 || val > 255) {
-				alert ("Valule needs to be 0 - 255");
+			// TODO: needs to be even value
+			if (val < 0 || val > 255 || val % 2 != 0) {
+				alert ("Valule needs to be an EVEN number between 0 and 254");
 				return;
 			}
 
 			selector.val(val);
 
 			memory.reset();
-			(cpuid == 0) ?  window.cpu0.of = val : window.cpu1.of = val;
+
+			cpu.reset(); // reset cpu or gets in funky state.
+			cpu.of = val;
 
 			// reload both to make it user friendly
 			loadProgram(0);

@@ -15,6 +15,7 @@ function loadProgram(id) {
 	clearError(id); // clear all errors
 
 	var code = new Uint8Array(128);
+	var codeCount = 0;
 	var currentLine = 0;
 
 	var textArea = $("#program" +id +"input");
@@ -71,6 +72,7 @@ function loadProgram(id) {
 		code[currentLine] = machineCode[1];
 		currentLine++;
 
+		codeCount+=2;
 		memLocation += 0x02;
 	}
 
@@ -80,30 +82,16 @@ function loadProgram(id) {
 	var location = (offset) % 256;
 
 	console.log( "Memory offset for cpu: " +id + " Offset: " +d2h(offset,2) +" Location: " +location);
-	for (var  i=0; i<128; i++) {
 
+	// Stop writing program once we get to end of code OR we're over 128 bytes.
+	for (var  i=0; i <(codeCount||i<128);  i++) {
 
 		// Wrap around to start if we overflow.
 		var oflocation = (location+i)%256;
+		memory[oflocation] = code[i];
 
-
-		// probably shouldn't have this here?
-
-		// TODO: very ulgy hack.  This highlights our program memory, but don't want to highlight 0x00 instructions.
-		// WARNING: this also prevents us from writing 0x00 into the other programs space... since we can get 128 bytes in size
-		// if both programs are large enough and overlap, we can overwrite each other with code.. that is acceptable..
-		// but should not ever "zero out" the other program.
-		
-		// TODO: NEWEST - I added value 'pl' (program length) to CPU.  
-		// We can calculate program size, update cpu.pl and use memory.display() to add colors since would have size of program.
-		
-		if (!(code[i] == 0x00 && code[i+1] == 0x00) && i != 127) {	
-	
-			memory[oflocation] = code[i];
-
-			var htmllocation = d2h(oflocation,2);	
-			$("#" +htmllocation).css("background-color", cpu.color);
-		}
+		cpu.programMap[oflocation] = true;
+		cpu.programMap[oflocation+0x01] = true;
 	}
 
 	// Set PC to starting location
