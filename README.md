@@ -23,10 +23,8 @@ See: http://www.anne-gert.nl/projects/simpsim/
 
 
 ## TODO
-
 * Need to add instruction `addf`.
 * Need to verify instruction `addi` (for negative numbers).
-* `jmp` to labels needs to be added.
 * databytes (db) should be added.
 
 * Interfaces is ulgy, needs a lot of work.
@@ -46,4 +44,5 @@ See: http://www.anne-gert.nl/projects/simpsim/
 * Allow setting of program offset per CPU (register 'of').
 * Add versioning key.
 * code needs a major clean up.
+* `jmp` to labels needs to be added.
 

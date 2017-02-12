@@ -441,6 +441,7 @@ load R4,0xFF ; load imm
 store R4, [0xD0]
 move R9,R4
 ; test
+Main:
 addi RA,R1,R1
 or RB, RA, RB
 and RC, RB, R4
@@ -450,6 +451,7 @@ ror RE, 3
 ror RE, 7
 ror RE,13 
 ;error 1,1
+jmp Main
 jmpEQ R0=R0, 0x02
 halt</textarea>
 </td>

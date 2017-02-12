@@ -30,6 +30,9 @@ function CPU(id) {
 	this.color=(id ==0) ? "lightblue" : "thistle";
 	this.hlcolor=(id ==0) ? "steelblue" : "mediumpurple";
 
+	// Label addresses 
+	this.labels = [];
+
 }
 
 /**
@@ -49,6 +52,8 @@ CPU.prototype.reset = function() {
 
 	this.halted=false;
 	this.status = "ready"; 
+
+	this.labels = [];
 }
 
 /**

@@ -7,9 +7,12 @@
 /**
 * This is our 'master' function.  It takes a cpu id and loads program from memory (obeying memory offsets).
 */
+
+
 function loadProgram(id) {
 
 	var cpu = (id === 0) ? cpu0 : cpu1;
+	clearError(id); // clear all errors
 
 	var code = new Uint8Array(128);
 	var currentLine = 0;
@@ -18,6 +21,9 @@ function loadProgram(id) {
 	var lines = textArea.val().toLowerCase().split('\n');
 
 	var lineNumber = 0; // for debugging.
+
+	// This gets incremented as we load into memory
+	var memLocation = cpu.of;
 
 	for(var i = 0;i < lines.length;i++){
 
@@ -31,11 +37,31 @@ function loadProgram(id) {
 			continue;
 		}
 
+		// labels must be 4 or more characters long (including ending :)
+	
 		console.log("----------------------");
 		console.log("Line: #" +line +"#");
-		var machineCode = getMachineCode(line);
+
+		// Labels are special cases.  They just point to current memory location.
+		var labelRegex = /.+:$/;
+		if (line.match(labelRegex)) {
+			var labelName = line.replace(/\t|\s/g).replace(" ","").replace(":", "");
+			cpu.labels[labelName] = memLocation;
+			console.log("Found label: " +labelName +" memLocation: " +memLocation);
+			continue;
+		}	
+
+		var machineCode = getMachineCode(cpu, line);
 		if (machineCode[0] == 0x00) {
-			printError(id, "Error loading program! Line: " +line +" Code: " +JSON.stringify(machineCode));
+			printError(id, "Error loading program on line: " +lineNumber +" Line: '" +line +"' Code Returned: "
+			+" bytes [ " +d2h(machineCode[0],2) +" , " +d2h(machineCode[0], 2)
+			+" ] nibbles [ " 
+				+d2h(machineCode[0]<<4,1) +" , "
+				+d2h(machineCode[0]&0x0F,1) +" , "
+				+d2h(machineCode[1]<<4,1) +" , "
+				+d2h(machineCode[1]&0x0F,1) 
+			+" ]");
+			return;
 		}
 		//console.log("Mach: " +d2h(getMachineCode(line)[0],2) +d2h(getMachineCode(line)[1],2));
 		console.log("Mach: " +d2h(machineCode[0], 2) +d2h(machineCode[1], 2));
@@ -44,6 +70,8 @@ function loadProgram(id) {
 		currentLine++;
 		code[currentLine] = machineCode[1];
 		currentLine++;
+
+		memLocation += 0x02;
 	}
 
 	console.log("##############################");
@@ -108,15 +136,21 @@ function getOptCode(line) {
 
 	// invalid instruction
 	// TODO: switch to 0x00. 14=E which is allowed now
-	return (14);
+	return (0);
 }
 
 
 /**
 * This is called from 'loadProgram'.
 * If you give it a line of assembly (ie: "load R1,[0x00]") it will return the bytecode.
+* requires cpu object, so we can look up labels.
+* returns 3 bytes
+* [0] : instruction
+* [1] : data
+*
+* on error, [0] will be 0x00;
 */
-function getMachineCode(line) {
+function getMachineCode(cpu, line) {
 
 	var machineCode = new Uint8Array(2);
 	var regOnly = false;
@@ -132,6 +166,7 @@ function getMachineCode(line) {
 		machineCode[1] = 0x00;
 		return (machineCode);
 	}
+
 	if (instruction === "jmpeq") {
 		var reg = line.match(/r([0-9ABCDEF])\=r0/);
 
@@ -145,6 +180,19 @@ function getMachineCode(line) {
 		return (machineCode);
 	}
 
+	// Jmp is just a jmpeq R0=R0, label
+	if (instruction === "jmp") {
+
+		machineCode[0] = 0xB0; // Always compare R0=R0
+
+		var labelName = line.split(' ')[1].replace(/\t|\s/, '');
+		var location = d2h(cpu.labels[labelName],2);
+
+		console.log("jmp to label: " +labelName +" location: " +location);
+
+		machineCode[1] = location;
+		return (machineCode);
+	}
 
 	// This is second half of instruction (operands).
 	var secondHalf = line;
@@ -152,6 +200,13 @@ function getMachineCode(line) {
 	// Need to strip out user spaces.
 	secondHalf = secondHalf.replace(instruction, "");
 	secondHalf = secondHalf.replace(/\t|\s/, "");
+
+	// Returns error if we have trouble parsing this..
+	if (!secondHalf || secondHalf.match(',') == null) {
+		machineCode[0] = 0x00;
+		machineCode[1] = 0x00;
+		return (machineCode);
+	}
 
 	// Determine number of parameters based on commas
 	var parameters = secondHalf.match(/,/g).length+1;
@@ -217,7 +272,7 @@ function getMachineCode(line) {
 		// reg to reg operations
 		if (regops == 2) {
 			machineCode[0] = (opCode << 4);
-			// flip them... ??
+			// flip them... ?? This is what simple sim does.
 			machineCode[1] = (operands[1]<<4) | operands[0];
 		}
 
@@ -225,17 +280,6 @@ function getMachineCode(line) {
 			machineCode[0] = (opCode << 4) | operands[0];
 			machineCode[1] = (operands[1]<<4) | operands[2];
 		}
-
-
-		/*
-		if (regops == 2) {
-			machineCode[1] = (operands[1]<<4) | operands[2]; // reverses them... odd
-		} else {
-			machineCode[0] = machineCode[0] | operands[1];
-			machineCode[1] = (operands[2]<<4) | operands[3]; // reverses them... odd
-		}*/
-
-
 	}
 
 

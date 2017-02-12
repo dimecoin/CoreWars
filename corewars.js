@@ -2,7 +2,6 @@
 * This file is for gloabl helper functions now.
 */
 
-
 var version = "1.1";
 
 
@@ -32,6 +31,12 @@ function printError (id, error) {
 	console.log("Error on CPU: " +id +" " +error);
 }
 
+/**
+* clears all errors from players 'output' console.
+*/
+function clearError(id) {
+	$("#program" +id +"output").html("");
+}
 
 
 
