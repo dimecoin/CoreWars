@@ -7,13 +7,16 @@
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
 		<script src="corewars.js"></script>
+		<script src="memory.js""></script>
+		<script src="cpu.js""></script>
+		<script src="assembler.js"></script>
+		<script src="simulator.js"></script>
 		<link rel="stylesheet" href="style.css">
 	</head>
 <body>
 
 <script>
 
-	var running=false;
 	// CPUs are executed in turns, one after another
 	// Randomly pick one to go first, out of fairiness.
 	var turn =  Math.random() >= 0.5;
@@ -33,17 +36,17 @@
 		}
 
 		window.turn=!window.turn;
-		refresh();
+		sim.display();
 	}
 
 	function runSim () {
 
-		if (!running) {
+		if (!sim.running) {
 			return;
 		}
 
-			runNextStep();
-			setTimeout(runSim, cpuspeed);
+		runNextStep();
+		setTimeout(runSim, cpuspeed);
 	}
 
 
@@ -66,17 +69,10 @@
 
 		runSim();
 
-		refresh();
+		sim.display();
 
 	});
 
-
-	// helper function to break... used a lot.
-	function haltSim() {
-		window.running=false; 
-		$("#button_runsim").prop("disabled",false);
-		$("#button_step").prop("disabled",false);
-	}
 
 	// helper function for global buttons.
 	function buttonClick(button) {
@@ -86,18 +82,20 @@
 		switch(button) {
 
 			case "button_runsim":
-				window.running=true;
+
+				sim.running=true;
+
 				$("#button_runsim").prop("disabled",true);
 				$("#button_step").prop("disabled",true);
 				window.runSim();
 			break;
 
 			case "button_break":
-				window.haltSim(); // halt simulation
+				sim.halt();
 			break;
 
 			case "button_step":
-				window.running=false; 
+				sim.halt();
 				$("#button_runsim").prop("disabled",false);
 				runNextStep();
 			break;
@@ -110,8 +108,8 @@
 			break;
 
 			case "button_clearmemory":
-				window.haltSim(); // halt simulation
-				window.clearMemory();
+				sim.halt();
+				memory.reset();
 			break;
 
 			case "load0": 
@@ -136,7 +134,7 @@
 
 				selector.val(val);
 
-				window.clearMemory();
+				memory.reset();
 				(cpuid == 0) ?  window.cpu0.of = val : window.cpu1.of = val;
 				// reload both to make it user friendly
 				loadProgram(0);
@@ -147,13 +145,13 @@
 			case "button_resetcpu0":
 			case "button_resetcpu1":
 
-				window.haltSim(); // halt simulation
+				sim.halt();
 
 				var c = button.match(/button_resetcpu([0-9])/);
 				var cpuid = parseInt(c[1]);
 
 				var cpu = (cpuid == 0) ?  window.cpu0 : window.cpu1;
-				resetCPU(cpu);
+				cpu.reset();
 
 				// reloading to clear memory colors
 				loadProgram(cpuid);
@@ -161,17 +159,19 @@
 			break;
 
 			case "button_resetcpus":
-				window.haltSim(); // halt simulation
-				resetCPU(cpu0);
-				resetCPU(cpu1);
+				sim.halt();
+				cpu0.reset();
+				cpu1.reset();
 				loadProgram(0);
 				loadProgram(1);
 			break;
 			case "button_resetall":
-				window.haltSim(); // halt simulation
-				clearMemory();
-				resetCPU(cpu0);
-				resetCPU(cpu1);
+				sim.halt();
+				sim.reset();
+
+				memory.reset();
+				cpu0.reset();
+				cpu1.reset();
 				loadProgram(0);
 				loadProgram(1);
 
@@ -180,7 +180,7 @@
 
 		}
 
-		refresh();
+		sim.display();
 	}
 
 </script>
