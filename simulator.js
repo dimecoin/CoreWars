@@ -71,6 +71,7 @@ Simulator.prototype.halt = function() {
 Simulator.prototype.runNextStep = function() {
 
 	if (cpu0.halted || cpu1.halted) {
+		this.halt();
 		return;
 	}
 
@@ -81,13 +82,14 @@ Simulator.prototype.runNextStep = function() {
 	}
 
 	this.turn=!this.turn;
+
+	// Update our screen, not sure if this belongs here.
 	this.display();
 }
 
 /**
 * Runs a continious simulation.
 */
-
 Simulator.prototype.runLoop = function() {
 
 	if (!this.running) {
