@@ -17,64 +17,37 @@
 
 <script>
 
-	// CPUs are executed in turns, one after another
-	// Randomly pick one to go first, out of fairiness.
-	var turn =  Math.random() >= 0.5;
-
-	var cpuspeed = 250;
-
-	function runNextStep() {
-
-		if (cpu0.halted || cpu1.halted) {
-			return;
-		}
-
-		if (window.turn) {
-			cpu0.executeNext();
-		} else {
-			cpu1.executeNext();
-		}
-
-		window.turn=!window.turn;
-		sim.display();
-	}
-
-	function runSim () {
-
-		if (!sim.running) {
-			return;
-		}
-
-		runNextStep();
-		setTimeout(runSim, cpuspeed);
-	}
-
-
 	$( document ).ready(function() {
 
 		$("#button_runsim").prop("disabled",false);
 		$("#button_step").prop("disabled",false);
 
-		$("#currentcpuspeed").html(window.cpuspeed);
+		$("#currentcpuspeed").html(sim.cpuSpeed);
 
 		$("#memoryof0").val(cpu0.of);
 		$("#memoryof1").val(cpu1.of);
 
 		$("#version").html(version);
 
+		//console.log(memory);
+		//console.log(JSON.stringify(cpu0));
 
-		console.log(memory);
-		console.log(JSON.stringify(cpu0));
-
-		loadProgram(0);
-		loadProgram(1);
-
-		runSim();
-
-		sim.display();
-
+		sim.init();
 	});
 
+	// helper function to enable/disable buttons
+	function buttonsHalt(halt) {
+
+		// if halted, we want to re-enable our run buttons.
+		if (halt) {
+			$("#button_runsim").prop("disabled",false);
+			$("#button_step").prop("disabled",false);
+		} else {
+		// dont' let user press two 'runsim' buttons at same time, it'll get wonky.
+			$("#button_runsim").prop("disabled",true);
+			$("#button_step").prop("disabled",true);
+		}
+	}
 
 	// helper function for global buttons.
 	function buttonClick(button) {
@@ -84,33 +57,38 @@
 		switch(button) {
 
 			case "button_runsim":
-
+				buttonsHalt(false);
 				sim.running=true;
-
-				$("#button_runsim").prop("disabled",true);
-				$("#button_step").prop("disabled",true);
-				window.runSim();
+				sim.runLoop();
 			break;
 
 			case "button_break":
 				sim.halt();
+				buttonsHalt(true);
 			break;
 
 			case "button_step":
 				sim.halt();
-				$("#button_runsim").prop("disabled",false);
-				runNextStep();
+				buttonsHalt(true);
+				sim.runNextStep();
 			break;
 
 			case "button_cpuspeed":
 				var val = $("#cpuspeed").val();
 
-				window.cpuspeed=val;
-				$("#currentcpuspeed").html(window.cpuspeed);
+				if (val < 10 || val > 10000) {
+					alert ("CPU Step speed should be between 10 ms and 10,000 ms");
+					return;
+				} else {
+					sim.cpuSpeed = val;
+				}
+
+				$("#currentcpuspeed").html(sim.cpuSpeed);
 			break;
 
 			case "button_clearmemory":
 				sim.halt();
+				buttonsHalt(true);
 				memory.reset();
 			break;
 
@@ -132,12 +110,14 @@
 
 				if (val < 0 || val > 255) {
 					alert ("Valule needs to be 0 - 255");
+					return;
 				}
 
 				selector.val(val);
 
 				memory.reset();
 				(cpuid == 0) ?  window.cpu0.of = val : window.cpu1.of = val;
+
 				// reload both to make it user friendly
 				loadProgram(0);
 				loadProgram(1);
@@ -148,6 +128,7 @@
 			case "button_resetcpu1":
 
 				sim.halt();
+				buttonsHalt(true);
 
 				var c = button.match(/button_resetcpu([0-9])/);
 				var cpuid = parseInt(c[1]);
@@ -162,21 +143,20 @@
 
 			case "button_resetcpus":
 				sim.halt();
+				buttonsHalt(true);
+
 				cpu0.reset();
 				cpu1.reset();
 				loadProgram(0);
 				loadProgram(1);
+
 			break;
 			case "button_resetall":
 				sim.halt();
+				buttonsHalt(true);
 				sim.reset();
-
-				memory.reset();
-				cpu0.reset();
-				cpu1.reset();
 				loadProgram(0);
 				loadProgram(1);
-
 			break;
 
 
