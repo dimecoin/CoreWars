@@ -26,6 +26,9 @@ function CPU(id) {
 
 	this.halted=false;
 	this.disabled = false;
+	if (this.id == 1) {
+//		this.disabled=true; // for testing, remove
+	}
 	this.status = "ready"; //TODO: should be enum
 
 	this.color=(id ==0) ? "lightblue" : "thistle";
@@ -53,7 +56,7 @@ CPU.prototype.reset = function() {
 
 	this.halted=false;
 	//this.disabled = false;
-	this.status = "ready"; 
+	this.status = (this.disabled) ? "disabled" : "ready"; 
 
 	this.labels = [];
 }
@@ -291,7 +294,23 @@ CPU.prototype.executeNext = function() {
 		// TODO: Check for bomb (0xFF) and make special fail state.
 		this.status="error";
 		this.halted=true;
-		printError(this.id, "Error in code execution! " +JSON.stringify(code));
+
+		if (this.ir[0] == 0xFF ) {
+			printError(this.id, "**KABOOM!** CPU Executed the BOMB 0xFF at address: (" +d2h(this.pc,2) +")");
+		}
+		printError(this.id, "Error in code execution at address: ( "
+			+d2h(this.pc,2)
+			+" )"
+			+" Code: " 
+			+" bytes [ " +d2h(this.ir[0],2) +" , " +d2h(this.ir[1], 2)
+			+" ] nibbles [ "
+			+d2h(this.ir[0]<<4,1) +" , "
+			+d2h(this.ir[0]&0x0F,1) +" , "
+			+d2h(this.ir[1]<<4,1) +" , "
+			+d2h(this.ir[1]&0x0F,1)
+		+" ]");
+
+		return; // don't increment pc if we halt
 	}
 
 	// jmp instruction, don't change ppc/pc since code did
