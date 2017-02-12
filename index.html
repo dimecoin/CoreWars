@@ -60,6 +60,8 @@
 		$("#memoryof0").val(cpu0.of);
 		$("#memoryof1").val(cpu1.of);
 
+		$("#version").html(version);
+
 
 		console.log(memory);
 		console.log(JSON.stringify(cpu0));
@@ -650,6 +652,13 @@ halt</textarea>
 
 	<tr>
 		<td><button id="button_resetall" onclick="window.buttonClick(this.id);">Reset/Reload All</button></td>	
+	</tr>
+
+	<tr align="center">
+		<td>
+			<strong>Version: </strong><div id="version" style="display: inline;"></div> 
+			(<i><a href="https://github.com/dimecoin/CoreWars">source code</a></i>)
+		</td>	
 	</tr>
 
 
