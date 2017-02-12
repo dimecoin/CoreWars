@@ -26,24 +26,24 @@ See: http://www.anne-gert.nl/projects/simpsim/
 
 * Need to add instruction `addf`.
 * Need to verify instruction `addi` (for negative numbers).
-* Should `jmp` to labels be allowed?
-* Should databytes (db) be allowed?
+* `jmp` to labels needs to be added.
+* databytes (db) should be added.
 
 * Interfaces is ulgy, needs a lot of work.
-* Add versioning key.
 * Keep track of cycle count
 * 0xFF instruction should have unique CPU status flag.
 * CPU Status flags should be enums
 
-* code needs a major clean up.
-
 * Allow direct edit of registers or memory?  Might be fun.
-* Hover over memory should give Decimal value?
+* Hover over memory should give decimal/binary value?
 
 * Better error handling for program assembler.
 * Better error handling on execution.
+* Clean up javascript console.
 
 ### Done
 * Clear button for memory and cpu registers.
 * Allow setting of program offset per CPU (register 'of').
+* Add versioning key.
+* code needs a major clean up.
 
