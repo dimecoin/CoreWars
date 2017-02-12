@@ -3,6 +3,9 @@
 */
 
 
+var version = "1.0";
+
+
 /** 
 * Convert dec to hex 
 * see: http://stackoverflow.com/a/17204359

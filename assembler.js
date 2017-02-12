@@ -138,7 +138,7 @@ function getMachineCode(line) {
 		console.log("Reg: " +reg[1]);
 		machineCode[0] = 0xB0 | reg[1];
 
-		var location = line.split(/,/)[1];
+		var location = line.split(/,/)[1].replace(/\t|\s/, '');
 		console.log("Location: "+location);
 
 		machineCode[1] = location;

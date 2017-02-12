@@ -119,7 +119,7 @@ CPU.prototype.fetch = function (location) {
 	var code = new Uint8Array(5);
 
 	var byte1 = window.memory[location];
-	var byte2 = window.memory[location];
+	var byte2 = window.memory[location+1];
 
 	code[0] = byte1  >> 4; // our instruction.
 	code[1] = byte1 & 0x0F; // first ops, always be 1 nibble
@@ -130,6 +130,11 @@ CPU.prototype.fetch = function (location) {
 
 	// Soemtimes we need entire byte for memory location.
 	code[4] = byte2; 
+
+	console.log("Feteched Instruction: ");
+	console.log("	bytes: ( " +byte1 +" , " +byte2 +" )");
+	console.log("	nibbles: [" +code[0] +" , " +code[1] +" , " +code[2] +" , " +code[3] +" ]");
+
 
 return(code);
 }
@@ -215,12 +220,11 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 11:
-			//console.log("JMP: " +JSON.stringify(code));
 			// TODO: Jump to label?  Is that valid in contest?
+			//console.log("JMP: " +JSON.stringify(code));
+			//console.log("JMP to location: " +location +" H: " +d2h(location,2));
 
 			if (this.r[0] == this.r[code[1]]) {
-				// This will get incremented, so subtract 2
-
 				this.ppc=this.pc;
 				this.pc = parseInt(location);
 			}

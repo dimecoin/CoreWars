@@ -1,6 +1,6 @@
 /**
 * This is our main simulator object.
-* It's the main object to coordinates everything.
+* It manages states of simulation and cpu/memory.
 */
 
 sim = new Simulator();
