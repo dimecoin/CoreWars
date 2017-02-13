@@ -18,6 +18,8 @@ function Simulator() {
 	// So high value will run it slower.
 	this.cpuSpeed = 250;
 
+	this.currentStep = 0;
+
 	
 }
 
@@ -41,7 +43,9 @@ Simulator.prototype.init = function() {
 */ 
 Simulator.prototype.reset = function() {
 
-	turn =  Math.random() >= 0.5;
+	this.turn =  Math.random() >= 0.5;
+
+	this.currentStep = 0;
 
 	memory.reset();
 	cpu0.reset();
@@ -53,9 +57,13 @@ Simulator.prototype.reset = function() {
 * Displays current state of "everything" to screen.
 */ 
 Simulator.prototype.display = function() {
+
+	$("#currentstep").html(this.currentStep);
+
 	memory.display();
 	cpu0.display();
 	cpu1.display();
+
 }
 
 /**
@@ -88,6 +96,8 @@ Simulator.prototype.runNextStep = function() {
 
 		this.turn=!this.turn;
 	}
+
+	this.currentStep++;
 
 	// Update our screen, not sure if this belongs here.
 	this.display();

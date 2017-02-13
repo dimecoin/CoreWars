@@ -90,7 +90,8 @@ function buttonClick(button) {
 
 			memory.reset();
 
-			cpu.reset(); // reset cpu or gets in funky state.
+			// reset cpu or gets in funky state.
+			cpu.reset(); 
 			cpu.of = val;
 
 			// reload both to make it user friendly

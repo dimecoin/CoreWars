@@ -45,6 +45,8 @@ function CPU(id) {
 		this.programMap[i] = false;
 	}
 
+	// number of instructions executed so far
+	this.currentStep = 0;
 }
 
 /**
@@ -71,6 +73,8 @@ CPU.prototype.reset = function() {
 	for (var i=0; i<256; i++) {
 		this.programMap[i] = false;
 	}
+
+	this.currentStep = 0;
 }
 
 /**
@@ -104,6 +108,8 @@ CPU.prototype.display = function () {
 	$("#cpu" +this.id +"OF").css("background-color", this.color);
 
 	$("#cpu" +this.id +"status").html(this.status);
+
+	$("#cpu" +this.id +"currentstep").html(this.currentStep);
 
 }
 
@@ -295,6 +301,8 @@ CPU.prototype.executeNext = function() {
 	if (!this.halted && rc) {
 		// Everything seems OK with execution.
 		this.status="running";
+		// Only count instructions that actucally worked?
+		this.currentStep++;
 	} else if (!this.halted && !rc) {
 		// Our execution failed.  Illegal or junk instructions 
 		// TODO: Check for bomb (0xFF) and make special fail state.
@@ -303,6 +311,7 @@ CPU.prototype.executeNext = function() {
 
 		if (this.ir[0] == 0xFF ) {
 			printError(this.id, "**KABOOM!** CPU Executed the BOMB 0xFF at address: (" +d2h(this.pc,2) +")");
+			this.status="bombed"
 		}
 		printError(this.id, "Error in code execution at address: ( "
 			+d2h(this.pc,2)

@@ -470,6 +470,7 @@ halt</textarea>
 		<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
 		<br>
 		<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
+		<hr>Instructions Executed: <div style="display: inline;" id="cpu0currentstep"></div>
 
 	</td>	
 	
@@ -482,11 +483,14 @@ halt</textarea>
 
 <table id="globalControls">
 	<tr>
-		<td><button id="button_runsim" onclick="window.buttonClick(this.id);">Run Simulation</button></td>	
+		<td>
+			<button id="button_runsim" onclick="window.buttonClick(this.id);">Run Simulation</button>
+			<hr>Instructions Executed: <div style="display: inline;" id="currentstep"></div>
+		</td>	
 	</tr>
 	</tr>
 	<tr>
-		<td style="display: inline;white-space:nowrap;">Current Step:<div style="display: inline;" id="currentcpuspeed"></div> (in ms)</td>
+		<td>Current Step Speed:<div style="display: inline;" id="currentcpuspeed"></div> (in ms)</td>
 	<tr>
 	<tr>
 		<td style="display: inline;white-space:nowrap;">
@@ -548,6 +552,7 @@ halt</textarea>
 			<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
 			<br>
 			<button id="button_resetcpu1" onclick="window.buttonClick(this.id);">Reset CPU</button>
+			<hr>Instructions Executed: <div style="display: inline;" id="cpu1currentstep"></div>
 			<br>
 			<button id="disablecpu1" onclick="window.buttonClick(this.id);">Enable/Disable CPU</button>
 		</td>	

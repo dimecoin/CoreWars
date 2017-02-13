@@ -27,8 +27,6 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * databytes (db) should be added.
 
 * Interfaces is ulgy, needs a lot of work.
-* Keep track of cycle count
-* 0xFF instruction should have unique CPU status flag.
 * CPU Status flags should be enums
 
 * Allow direct edit of registers or memory?  Might be fun.
@@ -47,4 +45,5 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * `jmp` to labels needs to be added.
 * Seperate rendering and logic code
 * Keep track of all memory that cpu writes too (so it can highlight it).
-
+* Keep track of cycle count
+* 0xFF instruction should have unique CPU status flag.
