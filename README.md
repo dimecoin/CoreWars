@@ -5,6 +5,7 @@ Dual CPU Simulator based on syntax of Simple Simulator and using 'A Simple Machi
 
 Live Demo: http://dimeproject.com/CoreWars
 
+CoreWars Instruction Set:  http://dimeproject.com/CoreWars/codes.html
 
 ## Core Wars
 
@@ -18,7 +19,6 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 
 
 ## Rerferences and other simulators: 
-* CoreWars instruction set:  http://dimeproject.com/CoreWars
 * Simple Simulator: http://www.anne-gert.nl/projects/simpsim/
 
 ## TODO
