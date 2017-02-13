@@ -153,6 +153,13 @@ return(code);
 
 CPU.prototype.execute = function(code) {
 
+
+	// our return code object
+	var rc = [];
+	rc["status"] = true;
+	rc["jmp"] = false;
+	rc["errormessage"] = "";
+
 	// See cpu.fetch() for code[0] 	format.
 
 	// code 0 == instruction nibble
@@ -162,7 +169,7 @@ CPU.prototype.execute = function(code) {
 
 	// This calculates or memory location if applicable.
 	// It takes offset into account and will wrap around memory space (ie. overflow) if needed
-	var location = (parseInt(code[4]) + parseInt(this.of)) % 255;
+	var location = (parseInt(code[4]) + parseInt(this.of)) % 256;
 	
 	switch (code[0]) {
 
@@ -235,7 +242,7 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 11:
-
+			console.log("jmpeq comparing R0 (" +this.r[0] +") to R" +code[1] +" (" +this.r[code[1]] +")");
 			if (this.r[0] == this.r[code[1]]) {
 				var location = (code[4]) % 256;
 
@@ -244,6 +251,7 @@ CPU.prototype.execute = function(code) {
 
 				console.log("jmp to location: " +this.pc);
 
+				rc["jmp"] = true;
 			}
 		break;
 
@@ -267,12 +275,13 @@ CPU.prototype.execute = function(code) {
 
 		// invalid instruction
 		default:
-			return (false);
+			rc["status"] = false;
+			rc["errormessage"] = "unknown op";
 		break;
 
 	}
 
-return(true);
+return(rc);
 }
 
 /**
@@ -299,12 +308,12 @@ CPU.prototype.executeNext = function() {
 	
 	// Execute and capture return code
 	var rc = this.execute(code);
-	if (!this.halted && rc) {
+	if (!this.halted && rc["status"]) {
 		// Everything seems OK with execution.
 		this.status="running";
 		// Only count instructions that actucally worked?
 		this.currentStep++;
-	} else if (!this.halted && !rc) {
+	} else if (!this.halted && !rc["status"]) {
 		// Our execution failed.  Illegal or junk instructions 
 		// TODO: Check for bomb (0xFF) and make special fail state.
 		this.status="error";
@@ -330,7 +339,7 @@ CPU.prototype.executeNext = function() {
 	}
 
 	// jmp instruction, don't change ppc/pc since code did
-	if (code[0] != 0x0B) {
+	if (!rc["jmp"]) {
 		this.ppc=this.pc;
 		this.pc += 2;
 	}

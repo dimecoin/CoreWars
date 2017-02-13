@@ -4,12 +4,52 @@
 * TODO: Clean up this entire file.
 */
 
+
+function preParser(id) {
+
+	var cpu = (id === 0) ? cpu0 : cpu1;
+
+	var textArea = $("#program" +id +"input");
+	var lines = textArea.val().toLowerCase().split('\n');
+
+	var memLocation = parseInt(cpu.of);
+
+
+	for(var i = 0;i < lines.length;i++){
+
+		// strip out comments:
+		var line = lines[i].split(';')[0];
+
+		// strip out blank lines
+		if (!line || line.length < 4) {
+			continue;
+		}
+
+		console.log("----------------------");
+		console.log("Line: #" +line +"#");
+
+		// Labels are special cases.  They just point to current memory location.
+		var labelRegex = /.+:$/;
+		if (line.match(labelRegex)) {
+			var labelName = line.replace(/\t|\s/g).replace(" ","").replace(":", "");
+			cpu.labels[labelName] = memLocation;
+			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
+			continue;
+		}	
+
+		memLocation += 2;
+
+	}
+
+
+}
+
 /**
 * This is our 'master' function.  It takes a cpu id and loads program from memory (obeying memory offsets).
 */
-
-
 function loadProgram(id) {
+
+	preParser(id);
 
 	var cpu = (id === 0) ? cpu0 : cpu1;
 	clearError(id); // clear all errors
@@ -43,6 +83,11 @@ function loadProgram(id) {
 		console.log("----------------------");
 		console.log("Line: #" +line +"#");
 
+		var labelRegex = /.+:$/;
+		if (line.match(labelRegex)) {
+			continue;
+		}
+		/*
 		// Labels are special cases.  They just point to current memory location.
 		var labelRegex = /.+:$/;
 		if (line.match(labelRegex)) {
@@ -50,7 +95,7 @@ function loadProgram(id) {
 			cpu.labels[labelName] = memLocation;
 			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
 			continue;
-		}	
+		}	*/
 
 		var machineCode = getMachineCode(cpu, line);
 		if (machineCode[0] == 0x00) {
@@ -163,12 +208,23 @@ function getMachineCode(cpu, line) {
 
 		var location = line.split(/,/)[1].replace(/\t|\s/, '');
 		console.log("Base Location: "+location);
-		console.log("Offset: " +cpu.of);
-		location = parseInt(location) + parseInt(cpu.of);
-		console.log("Code Location: " +location);
+		// is number
+		if (!isNaN(parseFloat(location))) {
 
-		// Add offset here, hack so jmp will work.
-		machineCode[1] = location;
+			console.log("Offset: " +cpu.of);
+			// Add offset here, hack so jmp will work.
+			location = parseInt(location) + parseInt(cpu.of);
+			console.log("Code Location: " +location);
+			machineCode[1] = location;
+		} else {
+			var labelName = location.replace(/\t|\s/, '');
+			location = cpu.labels[labelName];
+			console.log("Found label: #" +labelName +"#" +" address lookup: " +location);
+			machineCode[1] = location;
+		}
+		console.log("Code Location: " +location +" MachineCode[1]: " +machineCode[1]);
+
+
 		return (machineCode);
 	}
 
