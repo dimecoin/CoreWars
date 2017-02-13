@@ -12,6 +12,7 @@
 		<script src="assembler.js"></script>
 		<script src="simulator.js"></script>
 		<script src="controller.js"></script>
+		<script src="programs.js"></script>
 		<link rel="stylesheet" href="style.css">
 	</head>
 <body>
@@ -38,6 +39,7 @@
 		$("#version").html(version);
 
 		sim.init();
+		programs.init();
 	});
 
 </script>
@@ -440,45 +442,26 @@
 <div id="controls" class="container">
 
 <table border="1">
-	<tr><td>
-		<textarea id="program0input" rows="4" cols="50">
-load R1,[00] ; load memory
-load R4,0xFF ; load imm
-store R4, [0xD0]
-move R9,R4
-; test
-Main:
-addi RA,R1,R1
-or RB, RA, RB
-and RC, RB, R4
-xor RD, RB, R4
-move RE, RD
-ror RE, 3
-ror RE, 7
-ror RE,13 
-;error 1,1
-jmp Main
-jmpEQ R0=R0, 0x02
-halt</textarea>
-</td>
+	<tr>
+		<td valign="top"><textarea id="program0input" rows="25" cols="50"></textarea></td>
 
-	<td>
-		<button id="load0" onclick="window.buttonClick(this.id);">Reload</button>
-		<br>
+		<td valign="top">
+			<button id="load0" onclick="window.buttonClick(this.id);">Reload</button>
+			<br>
 
-		Memory Offset: <input id="memoryof0" size="4" type="number" value="0x00">
-		<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
-		<br>
-		<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
-		<hr>Instructions Executed: <div style="display: inline;" id="cpu0currentstep"></div>
+			Memory Offset: <input id="memoryof0" size="4" type="number" value="0x00">
+			<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
+			<br>
+			<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
+			<hr>Instructions Executed: <div style="display: inline;" id="cpu0currentstep"></div><hr>
+			<select id="cpu0programs"> </select>
+			<button id="button_pload0" onclick="window.buttonClick(this.id);">Load</button>
 
-	</td>	
-	
-
-</tr>
-		<tr><td>
-			<textarea id="program0output" rows="4" cols="50"></textarea>
-		</td></tr>
+		</td>	
+	</tr>
+	<tr>
+		<td colspan=2> <textarea id="program0output" rows="10" cols="80"></textarea> </td>
+	</tr>
 </table>
 
 <table id="globalControls">
@@ -527,26 +510,9 @@ halt</textarea>
 </table>
 
 <table id="tablecpu1controls" border="1" >
-	<tr><td>
-		<textarea id="program1input" rows="4" cols="50">
-load R1,[00] ; load memory
-load R4,0xFF ; load imm
-store R4, [0xE0]
-move R9,R4
-; test
-addi RA,R1,R1
-or RB, RA, RB
-and RC, RB, R4
-xor RD, RB, R4
-move RE, RD
-ror RE, 3
-ror RE, 7
-ror RE,13 
-;error 1,1
-jmpEQ R0=R0, 0x00
-halt</textarea>
-</td>
-		<td>
+	<tr>
+	<td valign="top"><textarea id="program1input" rows="25" cols="50"></textarea></td>
+	<td valign="top">
 			<button id="load1" onclick="window.buttonClick(this.id);">Reload</button><br>
 			Memory Offset: <input id="memoryof1" size="4" type="number" value="0x00">
 			<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
@@ -555,12 +521,15 @@ halt</textarea>
 			<hr>Instructions Executed: <div style="display: inline;" id="cpu1currentstep"></div>
 			<br>
 			<button id="disablecpu1" onclick="window.buttonClick(this.id);">Enable/Disable CPU</button>
-		</td>	
+			<hr>
+			Load program:<br>
+			<select id="cpu1programs"> </select>
+			<button id="button_pload1" onclick="window.buttonClick(this.id);">Load</button>
+	</td>	
 	</tr>
-		<tr>
-			<td>
-			<textarea id="program1output" rows="4" cols="50"></textarea>
-		</td></tr>
+	<tr>
+		<td colspan=2> <textarea id="program1output" rows="10" cols="80"></textarea> </td>
+	</tr>
 </table>
 
 

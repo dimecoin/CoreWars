@@ -71,6 +71,28 @@ function buttonClick(button) {
 			loadProgram(1);
 		break;
 
+		case "button_pload0":
+		case "button_pload1":
+
+			var c = button.match(/button_pload([0-9])/);
+			var cpuid = parseInt(c[1]);
+			var cpu = (cpuid == 0) ? cpu0 : cpu1;
+			var programName = $( "#cpu" +cpuid +"programs option:selected" ).text();
+			console.log("Selected program: " +programName +" for CPU: " +cpuid);
+
+			var program = programs.getProgram(programName);
+			var textArea = $("#program" +cpuid +"input");
+			textArea.text(program);
+
+			// also load in memory to make it easy
+			if (cpuid == 0) {
+				loadProgram(0);
+			} else {
+				loadProgram(1);
+			}
+		break;
+
+
 		case "button_memoryof0":
 		case "button_memoryof1":
 
