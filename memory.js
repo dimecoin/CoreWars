@@ -28,7 +28,12 @@ Uint8Array.prototype.display = function() {
 
 		// player memory space colors
 
+		// defaults
 		$("#" +d2h(i,2)).css("background-color", "white");
+		$("#" +d2h(i,2)).css("color", "black");
+		$("#" +d2h(i,2)).css("font-weight", "normal");
+
+
 		for (var c=0; c<2; c++) {
 			var cpu = (c==0) ? cpu0 : cpu1;
 
