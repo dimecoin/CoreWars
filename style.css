@@ -11,8 +11,8 @@ table, th, td {
 	border: 1px solid gray;
 }
 td {
-	width: 20px;
-	padding: 3px;
+	width: 5px;
+	padding: 5px;
 	text-align: center;
 }
 /* TODO: fix hover
@@ -33,5 +33,6 @@ td:hover {
 
 caption {
 	font-weight: bold;
+	font-size: 1.75em;
 	text-align: center;
 }

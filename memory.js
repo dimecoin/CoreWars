@@ -68,7 +68,9 @@ Uint8Array.prototype.display = function() {
 	for (var c=0; c<2; c++) {
 		var cpu = (c==0) ? cpu0 : cpu1;
 		$("#" +d2h(cpu.pc, 2)).css("background-color", cpu.hlcolor);
+		$("#" +d2h(cpu.pc,2)).css("font-weight", "bold");
 		$("#" +d2h(cpu.pc+1, 2)).css("background-color", cpu.hlcolor);
+		$("#" +d2h(cpu.pc+1,2)).css("font-weight", "bold");
 	}
 
 	// TODO: Should add colors (white or cpu color) when refreshed.

@@ -97,6 +97,7 @@ CPU.prototype.display = function () {
 	$("#cpu" +this.id +"PPC").html(d2h(this.ppc, 2));
 	$("#cpu" +this.id +"PC").html(d2h(this.pc, 2));
 	$("#cpu" +this.id +"PC").css("background-color", this.hlcolor);
+	$("#cpu" +this.id +"PC").css("font-weight", "bold");
 
 	$("#cpu" +this.id +"IR").html(d2h(this.ir[0], 2) + d2h(this.ir[1], 2));
 	$("#cpu" +this.id +"OF").html(d2h(this.of, 2));
