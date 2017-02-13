@@ -36,6 +36,8 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * Better error handling on execution.
 * Clean up javascript console.
 
+* Support binary notition (when loading)
+* Support decimal notition (when loading)
 
 ### Done
 * Clear button for memory and cpu registers.

@@ -25,6 +25,8 @@ function buttonClick(button) {
 
 	var selector = $("#" +button);
 
+	console.log("Button Clicked: " +button);
+
 	switch(button) {
 
 		case "button_runsim":

@@ -449,7 +449,7 @@
 			<button id="load0" onclick="window.buttonClick(this.id);">Reload</button>
 			<br>
 
-			Memory Offset: <input id="memoryof0" size="4" type="number" value="0x00">
+			Memory Offset: <input id="memoryof0" size="4" type="number" value="0">
 			<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
 			<br>
 			<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
@@ -514,7 +514,7 @@
 	<td valign="top"><textarea id="program1input" rows="25" cols="50"></textarea></td>
 	<td valign="top">
 			<button id="load1" onclick="window.buttonClick(this.id);">Reload</button><br>
-			Memory Offset: <input id="memoryof1" size="4" type="number" value="0x00">
+			Memory Offset: <input id="memoryof1" size="4" type="number" value="0">
 			<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
 			<br>
 			<button id="button_resetcpu1" onclick="window.buttonClick(this.id);">Reset CPU</button>
@@ -538,3 +538,77 @@
 
 </body>
 </html>
+
+
+<!-- here is our program code, lol -->
+<textarea id="program_slowpoke" style="display:none;">
+;; Slow Poke
+; slowest bomb in the world.
+; fills in each memory location 1 after another
+; start at end of its own program memory.
+load R4,0xFF ; load the bomb
+load R1,0x01 ; load our increment
+load R2,0x0C ; load our starting location.
+Main:
+	addi R2,R2,R1 ; add 1 to location
+	store R4,[R2] ; send bomb to location.
+jmp Main
+</textarea>
+
+<textarea id="program_loop" style="display:none;">
+; basic loop, doesn't do much
+Main:
+jmp Main
+</textarea>
+
+<textarea id="program_randomattack" style="display:none;">
+;; Random Attack
+;; Randomly attacks a memory location on board
+;; Does NOT have logic to not attack ourselves, lol
+
+;; (not random, but close enough)
+
+load R4,0xFF ; load the bomb into R4
+
+load R5,0x00 ; load our starting location (for attack, not of our self)
+
+load R6, 0x00  ;; our step.
+
+load R7, 0x1 ;; Increment by this.
+
+Main:
+
+	ror R5, 1 ; rotate right by n positions
+	xor R5,R5,R6 ; R5=R5^R6
+
+	;; increment so changes our position;
+	addi R5,R5,R7 ; change our memory location
+	addi R6,R6,R7 ; change what we xor against.
+
+	;; check that we don't hit ourselves.
+
+	store R4,[R5]
+		
+jmp Main 
+</textarea>
+<textarea id="program_test" style="display:none;">
+;; Test - random instructions for testing.
+
+load R1,[00] ; load memory
+load R4,0xFF ; load imm
+store R4, [0x80]
+move R9,R4
+; test
+addi RA,R1,R1
+or RB, RA, RB
+and RC, RB, R4
+
+xor RD, RB, R4
+
+move RE, RD
+ror RE,3
+ror RE,7
+ror RE,13
+jmpEQ R5=R0,0x02
+halt
+</textarea>
