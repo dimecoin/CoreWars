@@ -178,11 +178,13 @@ CPU.prototype.execute = function(code) {
 		break;
 		
 		case 5: //ADDI
+
 			var number1 = this.r[code[2]];
 			var number2 = this.r[code[3]];
-			var answer = number1 + number2;
+			var answer = parseInt(number1) + parseInt(number2);
 
 			console.log("Adding " +number1 +" + " +number2 +" = " +answer);
+
 			this.r[code[1]] = answer;
 		break;
 
@@ -225,13 +227,15 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 11:
-			// TODO: Jump to label?  Is that valid in contest?
-			//console.log("JMP: " +JSON.stringify(code));
-			//console.log("JMP to location: " +location +" H: " +d2h(location,2));
 
 			if (this.r[0] == this.r[code[1]]) {
+				var location = (code[4]) % 256;
+
 				this.ppc=this.pc;
-				this.pc = parseInt(location);
+				this.pc = location;
+
+				console.log("jmp to location: " +this.pc);
+
 			}
 		break;
 
@@ -241,9 +245,13 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 14:
+
 			var value = this.r[code[2]];
-			var location = this.r[code[3]];
-			console.log(this.id, "Storing value: " +value +" to memory location: " +location);
+			var location = (parseInt(this.r[code[3]]) + parseInt(this.of))%256;
+
+			console.log("STORE: code[3]: " +code[3] +" Reg: " +this.r[code[3]] +" of: " +this.of +" location: " +location);
+
+			console.log("CPU: " +this.id, "Storing value: " +value +" to memory location: " +location);
 			window.memory[location] = value;
 
 			this.programMap[location] = true;
@@ -275,7 +283,7 @@ CPU.prototype.executeNext = function() {
 	// Get next code
 	var code = this.fetch(this.pc);
 	console.log*("*************************");
-	console.log("Code: " +JSON.stringify(code));
+	//console.log("Code: " +JSON.stringify(code));
 
 	// Save to instruction register
 	this.ir[0]=(code[0]<<4)|code[1];

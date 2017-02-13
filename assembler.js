@@ -24,7 +24,7 @@ function loadProgram(id) {
 	var lineNumber = 0; // for debugging.
 
 	// This gets incremented as we load into memory
-	var memLocation = cpu.of;
+	var memLocation = parseInt(cpu.of);
 
 	for(var i = 0;i < lines.length;i++){
 
@@ -48,7 +48,7 @@ function loadProgram(id) {
 		if (line.match(labelRegex)) {
 			var labelName = line.replace(/\t|\s/g).replace(" ","").replace(":", "");
 			cpu.labels[labelName] = memLocation;
-			console.log("Found label: " +labelName +" memLocation: " +memLocation);
+			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
 			continue;
 		}	
 
@@ -65,7 +65,7 @@ function loadProgram(id) {
 			return;
 		}
 		//console.log("Mach: " +d2h(getMachineCode(line)[0],2) +d2h(getMachineCode(line)[1],2));
-		console.log("Mach: " +d2h(machineCode[0], 2) +d2h(machineCode[1], 2));
+		console.log("[" +d2h(memLocation,2) +"] MACH: " +d2h(machineCode[0], 2) +d2h(machineCode[1], 2));
 
 		code[currentLine] = machineCode[0];
 		currentLine++;
@@ -73,7 +73,7 @@ function loadProgram(id) {
 		currentLine++;
 
 		codeCount+=2;
-		memLocation += 0x02;
+		memLocation += 2;
 	}
 
 	console.log("##############################");
@@ -162,8 +162,12 @@ function getMachineCode(cpu, line) {
 		machineCode[0] = 0xB0 | reg[1];
 
 		var location = line.split(/,/)[1].replace(/\t|\s/, '');
-		console.log("Location: "+location);
+		console.log("Base Location: "+location);
+		console.log("Offset: " +cpu.of);
+		location = parseInt(location) + parseInt(cpu.of);
+		console.log("Code Location: " +location);
 
+		// Add offset here, hack so jmp will work.
 		machineCode[1] = location;
 		return (machineCode);
 	}
@@ -175,10 +179,12 @@ function getMachineCode(cpu, line) {
 
 		var labelName = line.split(' ')[1].replace(/\t|\s/, '');
 		var location = d2h(cpu.labels[labelName],2);
+		console.log("Label: #" +labelName +"# Value: " +location);
 
+		// TODO: jmp to label is buggy if we have an offset
 		console.log("jmp to label: " +labelName +" location: " +location);
 
-		machineCode[1] = location;
+		machineCode[1] = cpu.labels[labelName];
 		return (machineCode);
 	}
 
