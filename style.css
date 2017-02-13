@@ -1,11 +1,25 @@
+* {
+	font-family: monospace;
+}
 
 table {
 	float:left;
 	table-layout:fixed;
+	border-collapse: collapse; 
+}
+table, th, td {
+	border: 1px solid gray;
 }
 td {
 	width: 20px;
+	padding: 3px;
+	text-align: center;
 }
+/* TODO: fix hover
+td:hover {
+	background-color: #f0f0f0
+}
+*/
 
 #controls {
 	clear: both; float: left; display: block; position: relative;
