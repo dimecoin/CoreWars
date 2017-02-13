@@ -162,7 +162,7 @@ CPU.prototype.execute = function(code) {
 
 	// This calculates or memory location if applicable.
 	// It takes offset into account and will wrap around memory space (ie. overflow) if needed
-	var location = (code[4]+this.of) % 256;
+	var location = parseInt ( (code[4]+this.of) % 256);
 	
 	switch (code[0]) {
 
@@ -175,7 +175,8 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 3: // STORE
-			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
+			//location = (code[4]+this.of);
+			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
 			this.programMap[location] = true;
 		break;
