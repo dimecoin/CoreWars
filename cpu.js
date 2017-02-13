@@ -162,7 +162,7 @@ CPU.prototype.execute = function(code) {
 
 	// This calculates or memory location if applicable.
 	// It takes offset into account and will wrap around memory space (ie. overflow) if needed
-	var location = parseInt ( (code[4]+this.of) % 256);
+	var location = (parseInt(code[4]) + parseInt(this.of)) % 255;
 	
 	switch (code[0]) {
 
