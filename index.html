@@ -20,6 +20,12 @@
 
 	$( document ).ready(function() {
 
+		// handler to open codes window
+		$('a[rel*=external]').click(function(){
+			window.open($(this).attr('href'));
+			return false; 
+		});
+
 		// setup default values based on simulator, etc
 		$("#button_runsim").prop("disabled",false);
 		$("#button_step").prop("disabled",false);
@@ -507,7 +513,9 @@ halt</textarea>
 	<tr align="center">
 		<td>
 			<strong>Version: </strong><div id="version" style="display: inline;"></div> 
+			<br>
 			(<i><a href="https://github.com/dimecoin/CoreWars">source code</a></i>)
+			[<a href="codes.html" rel="external">Instruction Set</a>]
 		</td>	
 	</tr>
 

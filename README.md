@@ -18,9 +18,8 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 
 
 ## Rerferences and other simulators: 
-See: http://www.anne-gert.nl/projects/simpsim/
-
-
+* CoreWars instruction set:  http://dimeproject.com/CoreWars
+* Simple Simulator: http://www.anne-gert.nl/projects/simpsim/
 
 ## TODO
 * Need to add instruction `addf`.

@@ -2,6 +2,10 @@
 *  Controller functions. 
 */
 
+function openCodes() {
+	window.open("codes.html", "_blank", "toolbar=no,scrollbars=yes,resizable=yes,top=500,left=500,width=900,height=400");
+}
+
 // helper function to enable/disable buttons
 function buttonsHalt(halt) {
 

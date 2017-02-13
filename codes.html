@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title id="title">Core Wars</title>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+<body>
+
+<script>
+	$( document ).ready(function() { });
+</script>
+
+<table id="tablecodes" border="1" width="100%" align="center">
+	<caption>Instruction Set</caption>
+
+	<tr>
+		<th>OpCode</th>
+		<th>Operands</th>
+		<th>Instruction</th>
+		<th>Syntax example</th>
+		<th>Description</th>
+		<th>Instruction Set</th>
+		<th>Supported</th>
+	</tr>
+
+	<tr>
+		<td>0</td>
+		<td>000</td>
+		<td>none</td>
+		<td>na</td>
+		<td>Invalid Instruction</td>
+		<td>Simple Simulator</td>
+		<td>Yes, but will halt CPU</td>
+	</tr>
+
+	<tr>
+		<td>1</td>
+		<td>RXY</td>
+		<td>load</td>
+		<td>load R,[XY]</td>
+		<td>Loads register R with data from memory cell XY</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>RXY</td>
+		<td>load</td>
+		<td>load R,XY</td>
+		<td>Loads register R with data value XY</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>RXY</td>
+		<td>store</td>
+		<td>store R,XY</td>
+		<td>stores value in register R into memory cell XY</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>4</td>
+		<td>0RS</td>
+		<td>move</td>
+		<td>move R,S</td>
+		<td>move data found in register R to regsiter S</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>5</td>
+		<td>RST</td>
+		<td>addi</td>
+		<td>addi R,S,T</td>
+		<td>add bit patterns in regsiters S and T (in two's complement) and save to register R</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>6</td>
+		<td>RST</td>
+		<td>addf</td>
+		<td>addf R,S,T</td>
+		<td>add bit patterns in regsiters S and T (in float notion) and save to register R</td>
+		<td>Appendix C</td>
+		<td>not currently</td>
+	</tr>
+
+	<tr>
+		<td>7</td>
+		<td>RST</td>
+		<td>or</td>
+		<td>or R,S,T</td>
+		<td>or the bit pattern in register S and T and save to register R</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>8</td>
+		<td>RST</td>
+		<td>and</td>
+		<td>and R,S,T</td>
+		<td>and the bit pattern in register S and T and save to register R</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>9</td>
+		<td>RST</td>
+		<td>xor</td>
+		<td>xor R,S,T</td>
+		<td>xor the bit pattern in register S and T and save to register R</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>A</td>
+		<td>R0N</td>
+		<td>ror</td>
+		<td>ror R,N</td>
+		<td>rotate bit pattern in register R to right N times.  Bits rotated off will be placed on high end</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>B</td>
+		<td>RXY</td>
+		<td>jmpeq</td>
+		<td>jmpeq R0=R,XY</td>
+		<td>jumps program counter to memory cell XY if register R is equal to register R0</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>B</td>
+		<td>LABEL</td>
+		<td>jmp</td>
+		<td>jmp label</td>
+		<td>jumps program counter to LABEL memory cell (this is a macro for jmpeq using labels)</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>C</td>
+		<td>000</td>
+		<td>halt</td>
+		<td>halt</td>
+		<td>halts execution on CPU</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>D</td>
+		<td>0RS</td>
+		<td>load</td>
+		<td>load R,S</td>
+		<td>load the value in register R into the memory cell address referenced by register S</td>
+		<td>Simple Simulator</td>
+		<td>not supported</td>
+	</tr>
+
+	<tr>
+		<td>E</td>
+		<td>0RS</td>
+		<td>store</td>
+		<td>store R,[S]</td>
+		<td>store the value in register R into the memory cell address referenced by register S</td>
+		<td>Simple Simulator</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>F</td>
+		<td>RXY</td>
+		<td>jmple</td>
+		<td>jmple R<=R0, XY</td>
+		<td>jmp to memory cell XY if regsiter R is less than or equal to register R0</td>
+		<td>Simple Simulator</td>
+		<td>No, this is being used by CoreWars, see below</td>
+	</tr>
+
+
+	<tr>
+		<td>F</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td>Bomb that will halt CPU if executed</td>
+		<td>CoreWars</td>
+		<td>Yes, but will halt CPU with unique condition</td>
+	</tr>
+
+</table>
+
+

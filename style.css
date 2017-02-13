@@ -15,6 +15,11 @@ td {
 	padding: 5px;
 	text-align: center;
 }
+
+#tablecodes td {
+	text-align: left;
+}
+
 /* TODO: fix hover
 td:hover {
 	background-color: #f0f0f0
