@@ -140,14 +140,14 @@ function loadProgram(id) {
 	console.log( "Memory offset for cpu: " +id + " Offset: " +d2h(offset,2) +" Location: " +location);
 
 	// Stop writing program once we get to end of code OR we're over 128 bytes.
-	for (var  i=0; i <(codeCount||i<128);  i++) {
+	for (var  i=0; (i<codeCount&&i<128);  i++) {
 
 		// Wrap around to start if we overflow.
 		var oflocation = (location+i)%256;
 		memory[oflocation] = code[i];
 
 		cpu.programMap[oflocation] = true;
-		cpu.programMap[oflocation+0x01] = true;
+		//cpu.programMap[oflocation+0x01] = true;
 	}
 
 	// Set PC to starting location
