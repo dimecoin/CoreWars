@@ -33,7 +33,6 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * Hover over memory should give decimal/binary value?
 
 * Better error handling for program assembler.
-* Better error handling on execution.
 * Clean up javascript console.
 
 * Support binary notition (when loading)
@@ -49,3 +48,4 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * Keep track of all memory that cpu writes too (so it can highlight it).
 * Keep track of cycle count
 * 0xFF instruction should have unique CPU status flag.
+* Better error handling on execution.

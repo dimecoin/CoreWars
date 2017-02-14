@@ -191,7 +191,7 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 3: // STORE
-			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
+			//printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
 			this.programMap[location] = true;
 		break;
@@ -287,7 +287,7 @@ CPU.prototype.execute = function(code) {
 		// invalid instruction
 		default:
 			rc["status"] = false;
-			rc["errormessage"] = "unknown op";
+			rc["errormessage"] = "invalid instruction";
 		break;
 
 	}
@@ -344,7 +344,7 @@ CPU.prototype.executeNext = function() {
 			+d2h(this.ir[0]&0x0F,1) +" , "
 			+d2h(this.ir[1]<<4,1) +" , "
 			+d2h(this.ir[1]&0x0F,1)
-		+" ]");
+		+" ]  Return Code -> Status: (" +rc["status"] +"),  Error Message: (" +rc["errormessage"] +")");
 
 		return; // don't increment pc if we halt
 	}
