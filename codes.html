@@ -44,6 +44,17 @@
 		<td>Appendix C</td>
 		<td><input type="checkbox" disabled="true" checked></input></td>
 	</tr>
+
+	<tr>
+		<td>1</td>
+		<td>RL</td>
+		<td>load</td>
+		<td>load R,LABEL</td>
+		<td>Loads register R with data from memory cell at LABEL</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
 	<tr>
 		<td>2</td>
 		<td>RXY</td>
@@ -139,6 +150,16 @@
 		<td>jmpeq</td>
 		<td>jmpeq R0=R,XY</td>
 		<td>jumps program counter to memory cell XY if register R is equal to register R0</td>
+		<td>Appendix C</td>
+		<td><input type="checkbox" disabled="true" checked></input></td>
+	</tr>
+
+	<tr>
+		<td>B</td>
+		<td>RL</td>
+		<td>jmpeq</td>
+		<td>jmpeq R0=R,LABEL</td>
+		<td>jumps program counter to memory cell referance by LABEL if register R is equal to register R0</td>
 		<td>Appendix C</td>
 		<td><input type="checkbox" disabled="true" checked></input></td>
 	</tr>
