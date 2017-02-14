@@ -302,10 +302,15 @@ function getMachineCode(cpu, line) {
 
 	console.log("Second Half: " +secondHalf);
 	if (secondHalf.match(/\[/) || operands[1].match(/[a-z]+/) ) {
+
 		secondHalf = secondHalf.replace("[", "");
 		secondHalf = secondHalf.replace("]", "");
 
-		loadLabel=operands[1];
+		operands[1] = operands[1].replace("[", "").replace("]", "");
+
+		if (instruction == "load") {
+			loadLabel=operands[1];
+		}
 
 		// This is a memory operation if there are brakcets and only 1 registor detected in operands.
 		if (regops == 1) {
@@ -346,7 +351,7 @@ function getMachineCode(cpu, line) {
 	if (memOnly) {
 		machineCode[0] = (opCode << 4) | operands[0];
 
-		if (loadLabel) {
+		if (loadLabel.length >1) {
 			var labelName = loadLabel.replace(/\t|\s/, '');
 			location = cpu.labels[labelName];
 			console.log("Found label: #" +labelName +"#" +" address lookup: " +location);
