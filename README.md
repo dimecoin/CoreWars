@@ -32,7 +32,6 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * Allow direct edit of registers or memory?  Might be fun.
 * Hover over memory should give decimal/binary value?
 
-* Better error handling for program assembler.
 * Clean up javascript console.
 
 * Support binary notition (when loading)
@@ -49,3 +48,4 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * Keep track of cycle count
 * 0xFF instruction should have unique CPU status flag.
 * Better error handling on execution.
+* Better error handling for program assembler.

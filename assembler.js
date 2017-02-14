@@ -108,8 +108,14 @@ function loadProgram(id) {
 			continue;
 		}	*/
 
-		var machineCode = getMachineCode(cpu, line);
-		if (machineCode[0] == 0x00) {
+		var machineCode = [ 0x00, 0x00];
+		var error;
+		try {
+			machineCode = getMachineCode(cpu, line);
+		} catch (e) {
+			error = e;
+		}
+		if (machineCode[0] == 0x00 || error) {
 			printError(id, "Error loading program on line: " +lineNumber +" Line: '" +line +"' Code Returned: "
 			+" bytes [ " +d2h(machineCode[0],2) +" , " +d2h(machineCode[0], 2)
 			+" ] nibbles [ " 
@@ -117,7 +123,7 @@ function loadProgram(id) {
 				+d2h(machineCode[0]&0x0F,1) +" , "
 				+d2h(machineCode[1]<<4,1) +" , "
 				+d2h(machineCode[1]&0x0F,1) 
-			+" ]");
+			+" ]. Exception : " +error);
 			return;
 		}
 		//console.log("Mach: " +d2h(getMachineCode(line)[0],2) +d2h(getMachineCode(line)[1],2));
@@ -197,6 +203,10 @@ function getOptCode(line) {
 function getMachineCode(cpu, line) {
 
 	var machineCode = new Uint8Array(2);
+	// In case it doesn't parse right, we return error instruction (0x00)
+	machineCode[0] = 0x00;
+	machineCode[1] = 0x00;
+
 	var regOnly = false;
 	var memOnly = false;
 
@@ -277,6 +287,8 @@ function getMachineCode(cpu, line) {
 
 	// Determine number of parameters based on commas
 	var parameters = secondHalf.match(/,/g).length+1;
+	var operands = secondHalf.split(/,/);
+	var loadLabel="";
 
 	// How many are register operations, instead of memory
 	var regops=0;
@@ -288,9 +300,12 @@ function getMachineCode(cpu, line) {
 		return (machineCode);
 	}
 
-	if (secondHalf.match(/\[/)) {
+	console.log("Second Half: " +secondHalf);
+	if (secondHalf.match(/\[/) || operands[1].match(/[a-z]+/) ) {
 		secondHalf = secondHalf.replace("[", "");
 		secondHalf = secondHalf.replace("]", "");
+
+		loadLabel=operands[1];
 
 		// This is a memory operation if there are brakcets and only 1 registor detected in operands.
 		if (regops == 1) {
@@ -299,7 +314,6 @@ function getMachineCode(cpu, line) {
 	}
 
 
-	var operands = secondHalf.split(/,/);
 	console.log("Second Half: " +secondHalf +" Operands: " +JSON.stringify(operands));
 
 	for (var i=0; i<operands.length; i++) {
@@ -331,7 +345,15 @@ function getMachineCode(cpu, line) {
 
 	if (memOnly) {
 		machineCode[0] = (opCode << 4) | operands[0];
-		machineCode[1] = operands[1];
+
+		if (loadLabel) {
+			var labelName = loadLabel.replace(/\t|\s/, '');
+			location = cpu.labels[labelName];
+			console.log("Found label: #" +labelName +"#" +" address lookup: " +location);
+			machineCode[1] = location;
+		} else {
+			machineCode[1] = operands[1];
+		}
 	} else {
 
 		// reg and mem operation or immediate load.
