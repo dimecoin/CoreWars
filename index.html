@@ -461,6 +461,8 @@
 			<br>
 			<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
 			<hr>Instructions Executed: <div style="display: inline;" id="cpu0currentstep"></div><hr>
+			<hr>
+			Load program:<br>
 			<select id="cpu0programs"> </select>
 			<button id="button_pload0" onclick="window.buttonClick(this.id);">Load</button>
 
@@ -624,4 +626,17 @@ ror RE,7
 ror RE,13
 jmpEQ R5=R0,0x02
 halt
+</textarea>
+
+<textarea id="program_offsettest" style="display:none;">
+;; Offset test.
+;; testing memory offets (real and relative)
+START:
+
+load R4,0XFF
+store R4, [0x10]
+
+load R5, [0x10]
+
+jmp START
 </textarea>

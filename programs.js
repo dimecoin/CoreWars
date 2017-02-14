@@ -34,13 +34,11 @@ var programs = {
 	},
 
 	data: {
+		"offsettest": "; error loading program",
 		"test": "; error loading program",
 		"slowpoke": "; error loading program",
 		"loop": "; error loading program",
 		"randomattack": "; error loading program",
-
-
-
 
 
 	},

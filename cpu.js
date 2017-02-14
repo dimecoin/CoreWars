@@ -49,7 +49,7 @@ function CPU(id) {
 	this.currentStep = 0;
 
 	// Real or realative memory
-	this.realMemory = false;
+	this.realMem = false;
 }
 
 /**
@@ -110,7 +110,7 @@ CPU.prototype.display = function () {
 	$("#cpu" +this.id +"OF").html(d2h(this.of, 2));
 	$("#cpu" +this.id +"OF").css("background-color", this.color);
 	
-	$("#cpu" +this.id +"RM").html("" +this.realMemory);
+	$("#cpu" +this.id +"RM").html("" +this.realMem);
 
 	$("#cpu" +this.id +"status").html(this.status);
 
@@ -174,7 +174,11 @@ CPU.prototype.execute = function(code) {
 
 	// This calculates or memory location if applicable.
 	// It takes offset into account and will wrap around memory space (ie. overflow) if needed
+	
 	var location = (parseInt(code[4]) + parseInt(this.of)) % 256;
+	if (this.realMem) {
+		location = parseInt(code[4]) % 256;
+	}
 	
 	switch (code[0]) {
 
@@ -187,7 +191,6 @@ CPU.prototype.execute = function(code) {
 		break;
 
 		case 3: // STORE
-			//location = (code[4]+this.of);
 			printError(this.id, "Storing value: " +this.r[code[1]] +" to memory location: " +location +" orig: " +code[4] +" of: " +this.of);
 			window.memory[location] = this.r[code[1]];
 			this.programMap[location] = true;
@@ -269,6 +272,9 @@ CPU.prototype.execute = function(code) {
 
 			var value = this.r[code[2]];
 			var location = (parseInt(this.r[code[3]]) + parseInt(this.of))%256;
+			if (this.realMem) {
+				location = parseInt(this.r[code[3]])%256;
+			}
 
 			console.log("STORE: code[3]: " +code[3] +" Reg: " +this.r[code[3]] +" of: " +this.of +" location: " +location);
 

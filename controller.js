@@ -115,7 +115,7 @@ function buttonClick(button) {
 			}
 
 			selector.val(val);
-			cpu.realMemory= (mmVal == "real");
+			cpu.realMem= (mmVal == "real");
 
 			cpu.real
 

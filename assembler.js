@@ -224,7 +224,13 @@ function getMachineCode(cpu, line) {
 
 			console.log("Offset: " +cpu.of);
 			// Add offset here, hack so jmp will work.
-			location = parseInt(location) + parseInt(cpu.of);
+			if (cpu.realMem) {
+				console.log("Using real memory addressing for location: " +location);
+				location = parseInt(location);
+			} else {
+				console.log("Using relative memory addressing for location: " +location +" with offset: " +cpu.of);
+				location = parseInt(location) + parseInt(cpu.of);
+			}
 			console.log("Code Location: " +location);
 			machineCode[1] = location;
 		} else {
