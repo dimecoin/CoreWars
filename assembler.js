@@ -5,6 +5,10 @@
 */
 
 
+/**
+ *  This pre parsers our program, it's required for look ahead labels.
+ *  TODO: proabbly should clean this up or make it part of loadProram
+ */
 function preParser(id) {
 
 	var cpu = (id === 0) ? cpu0 : cpu1;
@@ -13,7 +17,6 @@ function preParser(id) {
 	var lines = textArea.val().toLowerCase().split('\n');
 
 	var memLocation = parseInt(cpu.of);
-
 
 	for(var i = 0;i < lines.length;i++){
 
@@ -29,9 +32,10 @@ function preParser(id) {
 		console.log("Line: #" +line +"#");
 
 		// Labels are special cases.  They just point to current memory location.
-		var labelRegex = /.+:$/;
+		var labelRegex = /.+:/;
 		if (line.match(labelRegex)) {
-			var labelName = line.replace(/\t|\s/g).replace(" ","").replace(":", "");
+			var labelName = line.split(':')[0];
+			labelName = labelName.replace(/\t|\s/g).replace(" ","").replace(":", "");
 			cpu.labels[labelName] = memLocation;
 			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
 			continue;
@@ -83,9 +87,16 @@ function loadProgram(id) {
 		console.log("----------------------");
 		console.log("Line: #" +line +"#");
 
-		var labelRegex = /.+:$/;
+		var labelRegex = /.+:/;
 		if (line.match(labelRegex)) {
-			continue;
+			// Support for labels on instruction lines.
+			line = line.split(':')[1];
+
+			// Just a label, skip since this is handled in preparser
+			if (!line) {
+				continue;
+			}
+
 		}
 		/*
 		// Labels are special cases.  They just point to current memory location.
