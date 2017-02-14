@@ -104,6 +104,10 @@ function buttonClick(button) {
 
 			var val = $("#memoryof" +cpuid).val();
 
+			var mmVal = (cpuid==0) ?  $('input[name=mm0]:checked').val() : $('input[name=mm1]:checked').val();
+
+			//alert("MMVAL selected: " +mmVal +" for cpu: " +cpuid);
+
 			// TODO: needs to be even value
 			if (val < 0 || val > 255 || val % 2 != 0) {
 				alert ("Valule needs to be an EVEN number between 0 and 254");
@@ -111,6 +115,9 @@ function buttonClick(button) {
 			}
 
 			selector.val(val);
+			cpu.realMemory= (mmVal == "real");
+
+			cpu.real
 
 			memory.reset();
 

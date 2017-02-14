@@ -38,8 +38,8 @@
 
 		$("#version").html(version);
 
-		sim.init();
 		programs.init();
+		sim.init();
 	});
 
 </script>
@@ -71,6 +71,7 @@
 	<tr> <td>PC</td><td id="cpu0PC"></td> </tr>
 	<tr> <td>IR</td><td id="cpu0IR"></td> </tr>
 	<tr> <td>OF</td><td id="cpu0OF"></td> </tr>
+	<tr> <td>RM</td><td id="cpu0RM"></td> </tr>
 </table>
 
 
@@ -435,6 +436,7 @@
 	<tr> <td>PC</td><td id="cpu1PC"></td> </tr>
 	<tr> <td>IR</td><td id="cpu1IR"></td> </tr>
 	<tr> <td>OF</td><td id="cpu1OF"></td> </tr>
+	<tr> <td>RM</td><td id="cpu1RM"></td> </tr>
 </table>
 
 </div>
@@ -446,11 +448,16 @@
 		<td valign="top"><textarea id="program0input" rows="25" cols="50"></textarea></td>
 
 		<td valign="top">
-			<button id="load0" onclick="window.buttonClick(this.id);">Reload</button>
-			<br>
+			<button id="load0" onclick="window.buttonClick(this.id);">Reload Program</button> <br>
 
-			Memory Offset: <input id="memoryof0" size="4" type="number" value="0">
-			<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
+			<div class="memorysettings">
+				Memory Offset: <input id="memoryof0" size="4" type="number" value="0"><br>
+				Memory Addressing: <br>
+				<input type="radio" name="mm0" value ="real">Real 
+				<input type="radio" name="mm0" value ="rela" checked>Relative<br>
+				<button id="button_memoryof0" onclick="window.buttonClick(this.id);">Set</button>
+			</div>
+
 			<br>
 			<button id="button_resetcpu0" onclick="window.buttonClick(this.id);">Reset CPU</button>
 			<hr>Instructions Executed: <div style="display: inline;" id="cpu0currentstep"></div><hr>
@@ -513,9 +520,15 @@
 	<tr>
 	<td valign="top"><textarea id="program1input" rows="25" cols="50"></textarea></td>
 	<td valign="top">
-			<button id="load1" onclick="window.buttonClick(this.id);">Reload</button><br>
-			Memory Offset: <input id="memoryof1" size="4" type="number" value="0">
-			<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
+			<button id="load1" onclick="window.buttonClick(this.id);">Reload Program</button><br>
+
+			<div class="memorysettings">
+				Memory Offset: <input id="memoryof1" size="4" type="number" value="0">
+				Memory Addressing: <br>
+				<input type="radio" name="mm1" value ="real">Real 
+				<input type="radio" name="mm1" value ="rela" checked>Relative<br>
+				<button id="button_memoryof1" onclick="window.buttonClick(this.id);">Set</button>
+			</div>
 			<br>
 			<button id="button_resetcpu1" onclick="window.buttonClick(this.id);">Reset CPU</button>
 			<hr>Instructions Executed: <div style="display: inline;" id="cpu1currentstep"></div>

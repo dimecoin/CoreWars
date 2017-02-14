@@ -47,6 +47,9 @@ function CPU(id) {
 
 	// number of instructions executed so far
 	this.currentStep = 0;
+
+	// Real or realative memory
+	this.realMemory = false;
 }
 
 /**
@@ -106,6 +109,8 @@ CPU.prototype.display = function () {
 	$("#cpu" +this.id +"IR").html(d2h(this.ir[0], 2) + d2h(this.ir[1], 2));
 	$("#cpu" +this.id +"OF").html(d2h(this.of, 2));
 	$("#cpu" +this.id +"OF").css("background-color", this.color);
+	
+	$("#cpu" +this.id +"RM").html("" +this.realMemory);
 
 	$("#cpu" +this.id +"status").html(this.status);
 
