@@ -301,19 +301,25 @@ function getMachineCode(cpu, line) {
 	}
 
 	console.log("Second Half: " +secondHalf);
-	if (secondHalf.match(/\[/) || operands[1].match(/[a-z]+/) ) {
+	if (secondHalf.match(/\[/) || operands[1].match(/[a-z]/) ) {
+
+		var brackets = secondHalf.match(/\[/);
+		var address = secondHalf.match (/0x/);
+		var label = false;
+		console.log("Brackets: " +brackets +" Address: " +address);
 
 		secondHalf = secondHalf.replace("[", "");
 		secondHalf = secondHalf.replace("]", "");
 
-		operands[1] = operands[1].replace("[", "").replace("]", "");
+		operands[1] = operands[1].replace("[", "").replace("]", "").replace(/\t|\s/, "");
 
-		if (instruction == "load") {
+		if (instruction == "load" && !brackets && !address) {
 			loadLabel=operands[1];
+			label = true;
 		}
 
 		// This is a memory operation if there are brakcets and only 1 registor detected in operands.
-		if (regops == 1) {
+		if (brackets || label) {
 			memOnly=true;
 		}
 	}
@@ -344,7 +350,7 @@ function getMachineCode(cpu, line) {
 	var opCode = getOptCode(instruction);
 	
 	console.log("opCode: " +opCode +" Operands: " +JSON.stringify(operands) 
-			+" MemOnly: " +memOnly +" Parameters: " +parameters +" RegOps: " +regops);
+			+" MemOnly: " +memOnly +" Parameters: " +parameters +" RegOps: " +regops +" LoadLabel: " +loadLabel);
 
 	// shift over 4 spaces for instruction, then put in first operand
 

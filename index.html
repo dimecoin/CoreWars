@@ -606,10 +606,20 @@ Main:
 		
 jmp Main 
 </textarea>
+<textarea id="program_loadtest" style="display:none;">
+;; Load command test.
+
+load R1,[0x02] ; load memory
+load R4,0xFF ; load imm
+load R5, test ; load from label
+test:
+halt
+</textarea>
+
 <textarea id="program_test" style="display:none;">
 ;; Test - random instructions for testing.
 
-load R1,[00] ; load memory
+load R1,[0x02] ; load memory
 load R4,0xFF ; load imm
 store R4, [0x80]
 move R9,R4
