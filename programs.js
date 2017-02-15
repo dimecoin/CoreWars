@@ -23,7 +23,11 @@ var programs = {
 
 		// load loop for program1 to make testing easier
 		var programData = this.getProgram("loop");
+		$("#program0input").text(programData);
+
+		var programData = this.getProgram("test");
 		$("#program1input").text(programData);
+
 
 
 	},
@@ -40,6 +44,7 @@ var programs = {
 		"slowpoke": "; error loading program",
 		"loop": "; error loading program",
 		"randomattack": "; error loading program",
+		"dtest": "; error loading program",
 
 
 	},

@@ -576,36 +576,6 @@ Main:
 jmp Main
 </textarea>
 
-<textarea id="program_randomattack" style="display:none;">
-;; Random Attack
-;; Randomly attacks a memory location on board
-;; Does NOT have logic to not attack ourselves, lol
-
-;; (not random, but close enough)
-
-load R4,0xFF ; load the bomb into R4
-
-load R5,0x00 ; load our starting location (for attack, not of our self)
-
-load R6, 0x00  ;; our step.
-
-load R7, 0x1 ;; Increment by this.
-
-Main:
-
-	ror R5, 1 ; rotate right by n positions
-	xor R5,R5,R6 ; R5=R5^R6
-
-	;; increment so changes our position;
-	addi R5,R5,R7 ; change our memory location
-	addi R6,R6,R7 ; change what we xor against.
-
-	;; check that we don't hit ourselves.
-
-	store R4,[R5]
-		
-jmp Main 
-</textarea>
 <textarea id="program_loadtest" style="display:none;">
 ;; Load command test.
 
@@ -650,3 +620,53 @@ load R5, [0x10]
 
 jmp START
 </textarea>
+
+
+<textarea id="program_dtest" style="display:none;">
+load R1,[0x02]
+load R4,0xFF
+</textarea>
+<textarea id="program_randomattack" style="display:none;">
+;; Random Attack
+;; Randomly attacks a memory location on board
+;; Does NOT have logic to not attack ourselves, 
+
+;; (not random, but close enough)
+
+load R4,0xFF ; load the bomb into R4
+
+load R0, 0x0D
+load R5,0x00 ; load our starting location (for attack, not of our self)
+
+load R7, 0x1 ;; Increment by this.
+
+Main:
+
+	ror R5, 3 ; rotate right by n positions
+	xor R5,R5,R7 ; R5=R5^R6
+	
+
+	addi R5,R5,R7
+
+	load R0, 0x10
+	jmpEQ R5=R0, mungle
+
+	load R0, 0x0D
+	jmpEQ R5=R0, mungle
+
+	load R0, 0x12
+	jmpEQ R5=R0, mungle
+
+	
+	store R4,[R5]
+		
+jmp Main 
+
+mungle:
+	ror R7, 5
+jmp Main
+</textarea>
+
+
+
+

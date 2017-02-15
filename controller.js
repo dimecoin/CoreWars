@@ -83,8 +83,10 @@ function buttonClick(button) {
 			console.log("Selected program: " +programName +" for CPU: " +cpuid);
 
 			var program = programs.getProgram(programName);
+			console.log("Program length: " +program.length);
+
 			var textArea = $("#program" +cpuid +"input");
-			textArea.text(program);
+			textArea.val(program);
 
 			// also load in memory to make it easy
 			if (cpuid == 0) {

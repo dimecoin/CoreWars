@@ -1,51 +1,183 @@
 /**
 * These are load and assembler functions.
-* TODO: Needs a better object/interface?
-* TODO: Clean up this entire file.
 */
 
 
 /**
- *  This pre parsers our program, it's required for look ahead labels.
- *  TODO: proabbly should clean this up or make it part of loadProram
+ *  This pre parsers our program, it does two things:
+ *  1) cleans up text format and changes into internal format.
+ *  2) Collects memory addresses for labels
  */
-function preParser(id) {
+function preParser(cpu, textArea) {
 
-	var cpu = (id === 0) ? cpu0 : cpu1;
-
-	var textArea = $("#program" +id +"input");
 	var lines = textArea.val().toLowerCase().split('\n');
 
-	var memLocation = parseInt(cpu.of);
+	var lineCount = 0;
+	var newLines = [];
 
+	// Loop 1:
+	// Remove null lines, spaces/tabs and comments
+	// Switch space delimeter with comma
+	// convert to lower case.
 	for(var i = 0;i < lines.length;i++){
 
 		// strip out comments:
 		var line = lines[i].split(';')[0];
 
-		// strip out blank lines
+		// Remove leading spaces
+		line = line.trim();
+		// remove duplicate spaces
+		line = line.replace(/\s{2,}/g, ' ');
+
+		// strip out blank lines, labels should be at least 4 characters
 		if (!line || line.length < 4) {
 			continue;
 		}
 
-		console.log("----------------------");
-		console.log("Line: #" +line +"#");
+		var lineData = line.split(" ");
+
+		// strip out spaces and tabs
+		var newLine = "";
+		for (var j=0; j<lineData.length; j++) {
+
+			newLine += lineData[j].replace(/\t|\s/g, '');
+
+			// use comma for instruction delimeter for now on
+			if (j==0 && lineData.length > 1) {
+				newLine +=",";
+			}
+
+		}
+
+		// Convert to lower case
+		newLine = newLine.toLowerCase();
+
+		newLines[lineCount] = newLine;
+		lineCount++;
+	}
+
+
+	// Loop 2:
+	// Gather label data and convert to mem addressing.
+	var memLocation = parseInt(cpu.of);
+
+	for(var i = 0;i < newLines.length;i++){
+
+		var line = newLines[i];
 
 		// Labels are special cases.  They just point to current memory location.
 		var labelRegex = /.+:/;
 		if (line.match(labelRegex)) {
+
+			// labels can be on same line as instructions, strip them out.
 			var labelName = line.split(':')[0];
-			labelName = labelName.replace(/\t|\s/g).replace(" ","").replace(":", "");
+			// Set it.
 			cpu.labels[labelName] = memLocation;
-			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
-			continue;
+			console.log(0, "Found label: #" +labelName +"# memLocation: " +memLocation);
+
+			// Remove label
+			line = line.replace(labelName +':', '');
+
+			// Change commas, this can happen if label is on same line as instruction.
+			line = line.replace(',', '');
+
+			console.log("Modified line after label: " +line);
+
+			// remove labels from our text since they are no longer needed.
+			if (line.length < 1) {
+				newLines.splice(i, 1); 
+			} else {
+				newLines[i] = line;
+			}
+
 		}	
 
 		memLocation += 2;
+	}
 
+	// Loop 3:
+	// Subsitution
+	for(var i = 0;i < newLines.length;i++){
+
+		var line = newLines[i];
+		var lineData = line.split(/,/);
+
+		// Update labels with memory addresses.
+		var jmpOffset = false;
+		for (var j=1; j<lineData.length; j++) {
+
+			if (typeof lineData[j] === 'string' && lineData[j].match(/[a-z]{4,}/)) {
+				var address = cpu.labels[lineData[j]];
+				if (address !== undefined) {
+
+					// load of label is really a 'loadm' instructions.  
+					// Put in brakets so it gets detected below.
+					if (lineData[0] == "load") {
+						lineData[j] = "[" +address +"]";
+					} else{
+						// This is ok for jmp
+						lineData[j] = address;
+					}
+
+				} else {
+					printError(cpu.id, "Error parsing program: Found memory label: '" +lineData[j] +"' but has no address defined! Did you forget label?");
+				}
+			} else if (lineData[0] == "jmpeq") {
+				jmpOffset = true;
+			}
+		}
+
+		if (jmpOffset) {
+			console.log("Checking jmpeq");
+			// special case for jmplabel
+			// Labels get set to realtive address.
+			// But if they are using a constant address, we need to update with offset if using relative memory model
+			if (!cpu.realMem) {
+				console.log("jmpeq relative offset, before: " +lineData[2]);
+				lineData[2] = parseInt(lineData[2]) + cpu.of;
+				console.log("jmpeq relative offset, after: " +lineData[2]);
+			}
+		}
+
+
+
+		// Instructions 'load' and 'store', change to internal opcodes if working with memory instead of immediate values
+		if (lineData[0] == "load" || lineData[0] == "store") {
+
+			if ( typeof lineData[2] === 'string' && lineData[2].match(/\[/)) {
+
+				// If this has a [R4] value (only for store), it's using reg not memory so don't set.
+				// Load doesn't load from reg, only memory or value
+				if (!lineData[2].match(/\[r\d{1,}\]/)) {
+					lineData[0] += "m";
+				}
+
+				lineData[2] = lineData[2].replace("[", "").replace("]", "");
+
+			}
+
+		}			
+
+		// Remove 'r' from registor locations.
+		for (var j=1; j<lineData.length; j++) {
+			if (typeof lineData[j] === 'string') {
+				lineData[j] = lineData[j].replace('r', '');
+			}
+		}
+
+		// Convert to numbers
+		for (var j=1; j<lineData.length; j++) {
+			lineData[j] = parseInt(lineData[j]);
+		}
+
+
+		// push back into array after modification
+		var newLine = lineData.join(",");
+		newLines[i] = newLine;
 	}
 
 
+	return (newLines);
 }
 
 /**
@@ -53,60 +185,26 @@ function preParser(id) {
 */
 function loadProgram(id) {
 
-	preParser(id);
-
 	var cpu = (id === 0) ? cpu0 : cpu1;
 	clearError(id); // clear all errors
+
+	var textArea = $("#program" +id +"input");
+
+	var lines = preParser(cpu, textArea);
+	var text = lines.join("\n");
+	// for testing only:
+	//$("#program" +id +"output").append(text +"\n");
 
 	var code = new Uint8Array(128);
 	var codeCount = 0;
 	var currentLine = 0;
 
-	var textArea = $("#program" +id +"input");
-	var lines = textArea.val().toLowerCase().split('\n');
-
-	var lineNumber = 0; // for debugging.
-
-	// This gets incremented as we load into memory
-	var memLocation = parseInt(cpu.of);
+	// TODO: make sure cpu.of is always input as number
+	var memLocation = cpu.of;
 
 	for(var i = 0;i < lines.length;i++){
 
-		lineNumber++;
-
-		// strip out comments:
-		var line = lines[i].split(';')[0];
-
-		// strip out blank lines
-		if (!line || line.length < 4) {
-			continue;
-		}
-
-		// labels must be 4 or more characters long (including ending :)
-	
-		console.log("----------------------");
-		console.log("Line: #" +line +"#");
-
-		var labelRegex = /.+:/;
-		if (line.match(labelRegex)) {
-			// Support for labels on instruction lines.
-			line = line.split(':')[1];
-
-			// Just a label, skip since this is handled in preparser
-			if (!line) {
-				continue;
-			}
-
-		}
-		/*
-		// Labels are special cases.  They just point to current memory location.
-		var labelRegex = /.+:$/;
-		if (line.match(labelRegex)) {
-			var labelName = line.replace(/\t|\s/g).replace(" ","").replace(":", "");
-			cpu.labels[labelName] = memLocation;
-			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
-			continue;
-		}	*/
+		var line=lines[i];
 
 		var machineCode = [ 0x00, 0x00];
 		var error;
@@ -116,7 +214,7 @@ function loadProgram(id) {
 			error = e;
 		}
 		if (machineCode[0] == 0x00 || error) {
-			printError(id, "Error loading program on line: " +lineNumber +" Line: '" +line +"' Code Returned: "
+			printError(id, "Error loading program on internal line: " +currentLine +" Line: '" +line +"' Code Returned: "
 			+" bytes [ " +d2h(machineCode[0],2) +" , " +d2h(machineCode[0], 2)
 			+" ] nibbles [ " 
 				+d2h(machineCode[0]<<4,1) +" , "
@@ -126,8 +224,6 @@ function loadProgram(id) {
 			+" ]. Exception : " +error);
 			return;
 		}
-		//console.log("Mach: " +d2h(getMachineCode(line)[0],2) +d2h(getMachineCode(line)[1],2));
-		console.log("[" +d2h(memLocation,2) +"] MACH: " +d2h(machineCode[0], 2) +d2h(machineCode[1], 2));
 
 		code[currentLine] = machineCode[0];
 		currentLine++;
@@ -153,11 +249,9 @@ function loadProgram(id) {
 		memory[oflocation] = code[i];
 
 		cpu.programMap[oflocation] = true;
-		//cpu.programMap[oflocation+0x01] = true;
 	}
 
 	// Set PC to starting location
-
 	cpu.ppc=null;
 	cpu.pc=location;
 }
@@ -165,7 +259,7 @@ function loadProgram(id) {
 // retruns an opt code based on instruction.
 // brakcets can denoate context
 // switch is awkward, probably should have did as a map with edge case.
-function getOptCode(line) {
+function getOpCode(line) {
 	
 	switch (line) {
 		case "loadm": return (1); break; // special case, overloading opcode
@@ -207,196 +301,104 @@ function getMachineCode(cpu, line) {
 	machineCode[0] = 0x00;
 	machineCode[1] = 0x00;
 
-	var regOnly = false;
-	var memOnly = false;
-
-	var instruction = line.split(' ')[0];
-	instruction  = instruction.replace(/\t|\s/, "");
+	var lineData = line.split(',');
+	instruction  = lineData[0];
+	console.log("----- MARCH ------");
 	console.log("instruction: #" +instruction +"#");
 
-	// Special cases, just return so don't have to keep checking.
-	if (instruction === "halt") {
-		machineCode[0] = 0xC0;
-		machineCode[1] = 0x00;
-		return (machineCode);
-	}
 
-	if (instruction === "jmpeq") {
-		var reg = line.match(/r([0-9ABCDEF])\=r0/);
+	var opCode = getOpCode(lineData[0]);
+	var operands = line.split(/,/);
 
-		console.log("Reg: " +reg[1]);
-		machineCode[0] = 0xB0 | reg[1];
-
-		var location = line.split(/,/)[1].replace(/\t|\s/, '');
-		console.log("Base Location: "+location);
-		// is number
-		if (!isNaN(parseFloat(location))) {
-
-			console.log("Offset: " +cpu.of);
-			// Add offset here, hack so jmp will work.
-			if (cpu.realMem) {
-				console.log("Using real memory addressing for location: " +location);
-				location = parseInt(location);
-			} else {
-				console.log("Using relative memory addressing for location: " +location +" with offset: " +cpu.of);
-				location = parseInt(location) + parseInt(cpu.of);
-			}
-			console.log("Code Location: " +location);
-			machineCode[1] = location;
-		} else {
-			var labelName = location.replace(/\t|\s/, '');
-			location = cpu.labels[labelName];
-			console.log("Found label: #" +labelName +"#" +" address lookup: " +location);
-			machineCode[1] = location;
-		}
-		console.log("Code Location: " +location +" MachineCode[1]: " +machineCode[1]);
-
-
-		return (machineCode);
-	}
-
-	// Jmp is just a jmpeq R0=R0, label
-	if (instruction === "jmp") {
-
-		machineCode[0] = 0xB0; // Always compare R0=R0
-
-		var labelName = line.split(' ')[1].replace(/\t|\s/, '');
-		var location = d2h(cpu.labels[labelName],2);
-		console.log("Label: #" +labelName +"# Value: " +location);
-
-		// TODO: jmp to label is buggy if we have an offset
-		console.log("jmp to label: " +labelName +" location: " +location);
-
-		machineCode[1] = cpu.labels[labelName];
-		return (machineCode);
-	}
-
-	// This is second half of instruction (operands).
-	var secondHalf = line;
+	var type = null
+	// Valid types: 
+	// null
+	// R,BYTE
+	// R,R
+	// R,R,R
+	// BYTE
 	
-	// Need to strip out user spaces.
-	secondHalf = secondHalf.replace(instruction, "");
-	secondHalf = secondHalf.replace(/\t|\s/, "");
+	switch (instruction) {
+		case "load":
+		case "loadm":
+		case "storem":
+		case "ror": 
+		case "jmpeq": 
+			type = "rb";
+		break;
 
-	// Returns error if we have trouble parsing this..
-	if (!secondHalf || secondHalf.match(',') == null) {
-		machineCode[0] = 0x00;
-		machineCode[1] = 0x00;
-		return (machineCode);
-	}
+		case "store":
+		case "move": 
+			type="rr";
+		break;
 
-	// Determine number of parameters based on commas
-	var parameters = secondHalf.match(/,/g).length+1;
-	var operands = secondHalf.split(/,/);
-	var loadLabel="";
+		case "addi": 
+		case "addf": 
+		case "or": 
+		case "and": 
+		case "xor": 
+			type="rrr";
+		break;
 
-	// How many are register operations, instead of memory
-	var regops=0;
-	if (secondHalf.match(/r/g)) {
-		regops = secondHalf.match(/r/g).length;
-	} else {
-		machineCode[0] = 0xE0;
-		machineCode[1] = 0x00;
-		return (machineCode);
-	}
+		case "jmp": 
+			type="b";
+		break;
 
-	console.log("Second Half: " +secondHalf);
-	if (secondHalf.match(/\[/) || operands[1].match(/[a-z]/) ) {
+		case "halt": 
+			type = "null";
+		break;
+	};
 
-		var brackets = secondHalf.match(/\[/);
-		var address = secondHalf.match (/0x/);
-		var label = false;
-		console.log("Brackets: " +brackets +" Address: " +address);
+	console.log("MachineParse: Instruction : " +instruction +" opCode: " +opCode 
+			+" Operands length: " +operands.length +" Operands " +JSON.stringify(operands) +" type: " +type);
 
-		secondHalf = secondHalf.replace("[", "");
-		secondHalf = secondHalf.replace("]", "");
+	machineCode[0] = (opCode << 4);
 
-		operands[1] = operands[1].replace("[", "").replace("]", "").replace(/\t|\s/, "");
+	switch (type) {
+		case "rb":
+			machineCode[0] = machineCode[0] | operands[1];
+			machineCode[1] = operands[2];
+		break;
 
-		if (instruction == "load" && !brackets && !address) {
-			loadLabel=operands[1];
-			label = true;
-		}
+		case "rr":
+			machineCode[0] = machineCode[0] & 0xF0;
+			machineCode[1] = (operands[1] << 4 | operands[2]);
+		break;
 
-		// This is a memory operation if there are brakcets and only 1 registor detected in operands.
-		if (brackets || label) {
-			memOnly=true;
-		}
-	}
+		case "rrr":
+			machineCode[0] = machineCode[0] | operands[1];
+			machineCode[1] = (operands[2] << 4 | operands[3]);
+		break;
 
-
-	console.log("Second Half: " +secondHalf +" Operands: " +JSON.stringify(operands));
-
-	for (var i=0; i<operands.length; i++) {
-
-		operands[i] = operands[i].replace(" ", "");
-		operands[i] = operands[i].replace("r", "");
-
-		if (operands[i].match("0x")) {
-			operands[i] = parseInt(+operands[i]);
-		} else {
-			operands[i] = parseInt("0x" +operands[i]);
-		}
-	}
-
-
-	if (memOnly && instruction == "load") {
-		instruction += "m";
-	}
-	if (instruction == "store" && regops == 1) {
-		instruction +="m";
-	}
-
-	var opCode = getOptCode(instruction);
-	
-	console.log("opCode: " +opCode +" Operands: " +JSON.stringify(operands) 
-			+" MemOnly: " +memOnly +" Parameters: " +parameters +" RegOps: " +regops +" LoadLabel: " +loadLabel);
-
-	// shift over 4 spaces for instruction, then put in first operand
-
-	if (memOnly) {
-		machineCode[0] = (opCode << 4) | operands[0];
-
-		if (loadLabel.length >1) {
-			var labelName = loadLabel.replace(/\t|\s/, '');
-			location = cpu.labels[labelName];
-			console.log("Found label: #" +labelName +"#" +" address lookup: " +location);
-			machineCode[1] = location;
-		} else {
+		case "b":
+			machineCode[0] = machineCode[0] & 0xF0;
 			machineCode[1] = operands[1];
-		}
-	} else {
+		break;
 
-		// reg and mem operation or immediate load.
-		if (regops == 1) {
-			machineCode[0] = (opCode << 4) | operands[0];
-			machineCode[1] = operands[1];
-		}
-
-		// reg to reg operations
-		if (regops == 2) {
-			machineCode[0] = (opCode << 4);
-			// flip them... ?? This is what simple sim does.
-			machineCode[1] = (operands[1]<<4) | operands[0];
-
-			// exepct for store... lol
-			if (instruction == "store") {
-			machineCode[1] = (operands[0]<<4) | operands[1];
-			}
-		}
-
-		if (regops == 3) {
-			machineCode[0] = (opCode << 4) | operands[0];
-			machineCode[1] = (operands[1]<<4) | operands[2];
-		}
+		case "null":
+			machineCode[0] = machineCode[0] & 0xF0;
+			machineCode[1] = 0x00;
+		break;
 	}
 
-
-
-
-
+	console.log("MCODE: " +getMCString(machineCode));
 
 return (machineCode);
 }
 
 
+
+/**
+ * Converts to user friendly string for debugging
+ **/
+function getMCString(machineCode) {
+
+	var string = "Bytes: [ " +d2h(machineCode[0],2) +" , " +d2h(machineCode[1],2) +" ]"
+			+" Nibbles: [ " +d2h(machineCode[0] >> 4,1) 
+			+" , " +d2h(machineCode[0]&0x0F,1)
+			+" , " +d2h(machineCode[1]>> 4,1)
+			+" , " +d2h(machineCode[1]&0x0F,1)
+			+" ]";
+
+	return (string);
+}
