@@ -59,7 +59,14 @@ function preParser(cpu, textArea) {
 
 	// Loop 2:
 	// Gather label data and convert to mem addressing.
-	var memLocation = parseInt(cpu.of);
+	// This is counter intutive, but cpu instruction convert relative addresses.
+	// But labels need to be relative, even if cpu is set to real addressing.
+	// So we subtract the offset so it works for labels and don't have to change constant mem coordinates.
+	var memLocation = parseInt(0x00);
+	if (cpu.realMem) {
+		memLocation = parseInt(cpu.of);
+	}
+	//	cpu.of);
 
 	for(var i = 0;i < newLines.length;i++){
 
@@ -107,7 +114,9 @@ function preParser(cpu, textArea) {
 		for (var j=1; j<lineData.length; j++) {
 
 			if (typeof lineData[j] === 'string' && lineData[j].match(/[a-z]{4,}/)) {
+
 				var address = cpu.labels[lineData[j]];
+
 				if (address !== undefined) {
 
 					// load of label is really a 'loadm' instructions.  

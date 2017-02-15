@@ -252,7 +252,6 @@ CPU.prototype.execute = function(code) {
 		case 11:
 			console.log("jmpeq comparing R0 (" +this.r[0] +") to R" +code[1] +" (" +this.r[code[1]] +")");
 			if (this.r[0] == this.r[code[1]]) {
-				var location = (code[4]) % 256;
 
 				this.ppc=this.pc;
 				this.pc = location;

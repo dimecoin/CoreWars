@@ -25,7 +25,7 @@ var programs = {
 		var programData = this.getProgram("loop");
 		$("#program0input").text(programData);
 
-		var programData = this.getProgram("test");
+		var programData = this.getProgram("loop");
 		$("#program1input").text(programData);
 
 
