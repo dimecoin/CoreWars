@@ -2,7 +2,7 @@
 * This file is for gloabl helper functions now.
 */
 
-var version = "1.4";
+var version = "1.5";
 
 
 /** 
