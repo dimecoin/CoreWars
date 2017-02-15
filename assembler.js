@@ -20,30 +20,28 @@ function preParser(cpu, textArea) {
 	// Switch space delimeter with comma
 	// convert to lower case.
 	for(var i = 0;i < lines.length;i++){
-		console.log("#### PreParser ####");
 
 		// strip out comments:
 		var line = lines[i].split(';')[0];
-		console.log("Staring line: #" +line +"#");
+		//console.log("Staring line: #" +line +"#");
 
 		// Remove leading spaces
 		line = line.trim();
 		// remove duplicate spaces
 		line = line.replace(/\s{2,}|\t{2,}/g, ' ');
-		console.log("Trimmed line: #" +line +"#");
+		//console.log("Trimmed line: #" +line +"#");
 
 		// strip out blank lines, labels should be at least 4 characters
 		if (!line || line.length < 4) {
 			continue;
 		}
 
+		// We need to temporarily remove label while we parse out op and operands.
 		var labelName = '';
 		if (line.match('.+:')) {
 			labelName = line.match('.+:')[0];
-			console.log("Found label: #" +labelName +"# in line: " +line);
 			line = line.replace(labelName, '');
 			line = line.trim();
-			console.log("preLabelLine: " +line);
 		}
 
 		var lineData = line.split(/\s|\t/);
@@ -61,8 +59,8 @@ function preParser(cpu, textArea) {
 
 		}
 
+		// Should be good, re-add label if there is one.
 		newLine = labelName +newLine;
-		console.log("newLine:" +newLine);
 
 		// Convert to lower case
 		newLine = newLine.toLowerCase();
@@ -93,6 +91,7 @@ function preParser(cpu, textArea) {
 
 			// labels can be on same line as instructions, strip them out.
 			var labelName = line.split(':')[0];
+
 			// Set it.
 			cpu.labels[labelName] = memLocation;
 			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
@@ -100,10 +99,7 @@ function preParser(cpu, textArea) {
 			// Remove label
 			line = line.replace(labelName +':', '');
 
-			// Change commas, this can happen if label is on same line as instruction.
-			//line = line.replace(',', '');
-
-			console.log("Modified line after label: " +line);
+			//console.log("Modified line after label: " +line);
 
 			// remove labels from our text since they are no longer needed.
 			if (line.length < 1) {
@@ -195,9 +191,16 @@ function preParser(cpu, textArea) {
 			if (typeof lineData[j] !== 'string') {
 			       continue;
 			}
-			if (lineData[j].match(/[a-f]/) && !lineData[j].match("0x") ) {
+
+			if (lineData[j].match('[0,1]{8,8}b$')) {
+				// parse binary
+				lineData[j] == lineData[j].replace('b', '');
+				lineData[j] = parseInt(lineData[j], 2);
+			} else if (lineData[j].match(/[a-f]/) && !lineData[j].match("0x") ) {
+				// parse hex
 				lineData[j] = parseInt("0x" + lineData[j]);
 			} else {
+				// probably digit
 				lineData[j] = parseInt(lineData[j]);
 			}
 		}
@@ -223,11 +226,14 @@ function loadProgram(id) {
 	var textArea = $("#program" +id +"input");
 
 	var lines = preParser(cpu, textArea);
+
+	// for testing only, this prints internal text to output console
+	/*
 	var text = lines.join("\n");
 	printError(id, "-------------------------------");
-	// for testing only:
 	$("#program" +id +"output").append(text +"\n");
 	printError(id, "-------------------------------");
+	*/
 
 	var code = new Uint8Array(128);
 	var codeCount = 0;

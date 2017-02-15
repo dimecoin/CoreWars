@@ -34,9 +34,6 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 
 * Clean up javascript console.
 
-* Support binary notition (when loading)
-* Support decimal notition (when loading)
-
 ### Done
 * Clear button for memory and cpu registers.
 * Allow setting of program offset per CPU (register 'of').
@@ -49,3 +46,5 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * 0xFF instruction should have unique CPU status flag.
 * Better error handling on execution.
 * Better error handling for program assembler.
+* Support binary notition (when loading)
+* Support decimal notition (when loading)
