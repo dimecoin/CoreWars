@@ -47,7 +47,7 @@
 <!-- table contriner -->
 <div class="container"> 
 
-<table id="tablecpu0" border="1">
+<table id="tablecpu0">
 	<caption>CPU0</caption>
 	<tr> <td>status</td><td id="cpu0status"></td> </tr>
 	<tr> <td>R0</td><td id="cpu0R0"></td> </tr>
@@ -75,7 +75,7 @@
 </table>
 
 
-<table id="memoryTable" border="1" width="50%">
+<table id="memoryTable" width="50%">
 	<caption>Memory</caption>
 	<tr>
 		<td></td>
@@ -412,7 +412,7 @@
 
 </table>
 
-<table id="tablecpu1" border="1">
+<table id="tablecpu1">
 	<caption>CPU1</caption>
 	<tr> <td>status</td><td id="cpu1status"></td> </tr>
 	<tr> <td>R0</td><td id="cpu1R0"></td> </tr>
@@ -443,7 +443,8 @@
 
 <div id="controls" class="container">
 
-<table border="1">
+<table id="tablecpu0controls">
+	<caption>Player 1</caption>
 	<tr>
 		<td valign="top"><textarea id="program0input" rows="25" cols="50"></textarea></td>
 
@@ -474,37 +475,41 @@
 </table>
 
 <table id="globalControls">
+	<caption>Global Controls</caption>
 	<tr>
 		<td>
+			Instructions Executed: <div style="display: inline;" id="currentstep"></div>
+			<hr>
 			<button id="button_runsim" onclick="window.buttonClick(this.id);">Run Simulation</button>
-			<hr>Instructions Executed: <div style="display: inline;" id="currentstep"></div>
+			<button id="button_resetall" onclick="window.buttonClick(this.id);">Reset/Reload All</button>
 		</td>	
 	</tr>
+	<tr>
+		<td>
+			Current Step Speed:<div style="display: inline;" id="currentcpuspeed"></div> (in ms)
+		</td>
 	</tr>
-	<tr>
-		<td>Current Step Speed:<div style="display: inline;" id="currentcpuspeed"></div> (in ms)</td>
-	<tr>
 	<tr>
 		<td style="display: inline;white-space:nowrap;">
 			Step Speed: <input id="cpuspeed" size="4" type="number" value="250">
-			<button id="button_cpuspeed" onclick="window.buttonClick(this.id);">Set</button></td>	
-		</td>
-	<tr>
-		<td><button id="button_break" onclick="window.buttonClick(this.id);">break</button></td>	
+			<button id="button_cpuspeed" onclick="window.buttonClick(this.id);">Set</button>
+		</td>	
 	</tr>
 	<tr>
-		<td><button id="button_step" onclick="window.buttonClick(this.id);">step</button></td>	
+		<td>
+			<button id="button_step" onclick="window.buttonClick(this.id);">step</button>
+			<button id="button_break" onclick="window.buttonClick(this.id);">break</button>
+		</td>	
 	</tr>
 	<tr>
-		<td><button id="button_clearmemory" onclick="window.buttonClick(this.id);">Clear Memory</button></td>	
 	</tr>
 	<tr>
-		<td><button id="button_resetcpus" onclick="window.buttonClick(this.id);">Reset CPUS</button></td>	
+		<td>
+			<button id="button_resetcpus" onclick="window.buttonClick(this.id);">Reset CPUS</button>
+			<button id="button_clearmemory" onclick="window.buttonClick(this.id);">Clear Memory</button>
+		</td>	
 	</tr>
 
-	<tr>
-		<td><button id="button_resetall" onclick="window.buttonClick(this.id);">Reset/Reload All</button></td>	
-	</tr>
 
 	<tr align="center">
 		<td>
@@ -518,7 +523,10 @@
 
 </table>
 
-<table id="tablecpu1controls" border="1" >
+<table id="tablecpu1controls">
+
+	<caption>Player 1</caption>
+
 	<tr>
 	<td valign="top"><textarea id="program1input" rows="25" cols="50"></textarea></td>
 	<td valign="top">
@@ -556,14 +564,14 @@
 
 
 <!-- here is our program code, lol -->
-<textarea id="program_slowpoke" style="display:none;">
+<textarea id="program_bot_slowpoke" style="display:none;">
 ;; Slow Poke
 ; slowest bomb in the world.
 ; fills in each memory location 1 after another
 ; start at end of its own program memory.
 load R4,0xFF ; load the bomb
 load R1,0x01 ; load our increment
-load R2,0x0C ; load our starting location.
+load R2,0x0b ; load our starting location.
 Main:
 	addi R2,R2,R1 ; add 1 to location
 	store R4,[R2] ; send bomb to location.
@@ -571,22 +579,21 @@ jmp Main
 </textarea>
 
 <textarea id="program_loop" style="display:none;">
-; basic loop, doesn't do much
-Main:
-jmp Main
+; basic loop, smallest non-terminating program.
+Main: jmp Main
 </textarea>
 
-<textarea id="program_loadtest" style="display:none;">
+<textarea id="program_test_load" style="display:none;">
 ;; Load command test.
 
-load R1,[0x02] ; load memory
-load R4,0xFF ; load imm
+load R1,[0x06] ; load memory
+load R4,0xC0 ; load imm
 load R5, test ; load from label
 test:
 halt
 </textarea>
 
-<textarea id="program_test" style="display:none;">
+<textarea id="program_test_junk" style="display:none;">
 ;; Test - random instructions for testing.
 
 load R1,[0x02] ; load memory
@@ -608,7 +615,7 @@ jmpEQ R5=R0,0x02
 halt
 </textarea>
 
-<textarea id="program_offsettest" style="display:none;">
+<textarea id="program_test_offset" style="display:none;">
 ;; Offset test.
 ;; testing memory offets (real and relative)
 START:
@@ -622,11 +629,12 @@ jmp START
 </textarea>
 
 
-<textarea id="program_dtest" style="display:none;">
+<textarea id="program_test_d" style="display:none;">
+;; random testing, changes a lot
 load R1,[0x02]
 load R4,0xFF
 </textarea>
-<textarea id="program_randomattack" style="display:none;">
+<textarea id="program_bot_randomattack" style="display:none;">
 ;; Random Attack
 ;; Randomly attacks a memory location on board
 ;; Does NOT have logic to not attack ourselves, 
@@ -668,7 +676,7 @@ jmp Main
 </textarea>
 
 
-<textarea id="program_managler" style="display:none;">
+<textarea id="program_test_managler" style="display:none;">
 ;; Syntax Managler/Tester 
 ;; This is a good test of the parser/assembler
 ;; makes things hard as possiable.

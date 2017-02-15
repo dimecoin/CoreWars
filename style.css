@@ -30,13 +30,23 @@ td:hover {
 	clear: both; float: left; display: block; position: relative;
 	width:100%;
 }
-
-#button_break {
+#button_runsim, #button_step {
+	color: green;
+}
+#button_resetall, #button_break {
 	color: red;
 }
 
+#tablecpu0controls {
+	color: lightblue;
+}
+
+#tablecpu1controls {
+	color: thistle;
+}
+
 .memorysettings {
-	border: 1px solid skyblue;
+	border: 1px solid grey;
 }
 
 

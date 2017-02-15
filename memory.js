@@ -11,6 +11,10 @@ var memory = new Uint8Array(256);
 */
 Uint8Array.prototype.reset = function() { 
 	this.fill(0x00);
+
+	// clear from CPUs too
+	cpu0.programMap.fill(false);
+	cpu1.programMap.fill(false);
 }
 
 /**

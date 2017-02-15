@@ -25,7 +25,7 @@ var programs = {
 		var programData = this.getProgram("loop");
 		$("#program0input").text(programData);
 
-		var programData = this.getProgram("managler");
+		var programData = this.getProgram("loop");
 		$("#program1input").text(programData);
 
 
@@ -38,14 +38,14 @@ var programs = {
 	},
 
 	data: {
-		"offsettest": "; error loading program",
-		"loadtest": "; error loading program",
-		"test": "; error loading program",
-		"slowpoke": "; error loading program",
+		"bot_slowpoke": "; error loading program",
+		"bot_randomattack": "; error loading program",
+		"test_d": "; error loading program",
+		"test_junk": "; error loading program",
+		"test_load": "; error loading program",
+		"test_managler": "; error loading program",
+		"test_offset": "; error loading program",
 		"loop": "; error loading program",
-		"randomattack": "; error loading program",
-		"dtest": "; error loading program",
-		"managler": "; error loading program",
 
 
 	},
