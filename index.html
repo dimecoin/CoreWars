@@ -668,5 +668,28 @@ jmp Main
 </textarea>
 
 
+<textarea id="program_managler" style="display:none;">
+;; Syntax Managler/Tester 
+;; This is a good test of the parser/assembler
+;; makes things hard as possiable.
+
+start:
+load R1,1
+         load    R2,2
+load R3, 0x3
+load R4, 00000100b
+load 	R5	,	5
+load R6,6;;test
+load   R7 , 7
+    load R8,     8
+	load	r9	,	9
+load RA,10
+starttwo: load RB, 11
+starthree:	load 	RC,    12
+startfour: load R1, 1
+jmp start ;;jmp
+
+</textarea>
+
 
 

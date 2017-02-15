@@ -20,21 +20,33 @@ function preParser(cpu, textArea) {
 	// Switch space delimeter with comma
 	// convert to lower case.
 	for(var i = 0;i < lines.length;i++){
+		console.log("#### PreParser ####");
 
 		// strip out comments:
 		var line = lines[i].split(';')[0];
+		console.log("Staring line: #" +line +"#");
 
 		// Remove leading spaces
 		line = line.trim();
 		// remove duplicate spaces
-		line = line.replace(/\s{2,}/g, ' ');
+		line = line.replace(/\s{2,}|\t{2,}/g, ' ');
+		console.log("Trimmed line: #" +line +"#");
 
 		// strip out blank lines, labels should be at least 4 characters
 		if (!line || line.length < 4) {
 			continue;
 		}
 
-		var lineData = line.split(" ");
+		var labelName = '';
+		if (line.match('.+:')) {
+			labelName = line.match('.+:')[0];
+			console.log("Found label: #" +labelName +"# in line: " +line);
+			line = line.replace(labelName, '');
+			line = line.trim();
+			console.log("preLabelLine: " +line);
+		}
+
+		var lineData = line.split(/\s|\t/);
 
 		// strip out spaces and tabs
 		var newLine = "";
@@ -48,6 +60,9 @@ function preParser(cpu, textArea) {
 			}
 
 		}
+
+		newLine = labelName +newLine;
+		console.log("newLine:" +newLine);
 
 		// Convert to lower case
 		newLine = newLine.toLowerCase();
@@ -80,13 +95,13 @@ function preParser(cpu, textArea) {
 			var labelName = line.split(':')[0];
 			// Set it.
 			cpu.labels[labelName] = memLocation;
-			console.log(0, "Found label: #" +labelName +"# memLocation: " +memLocation);
+			console.log("Found label: #" +labelName +"# memLocation: " +memLocation);
 
 			// Remove label
 			line = line.replace(labelName +':', '');
 
 			// Change commas, this can happen if label is on same line as instruction.
-			line = line.replace(',', '');
+			//line = line.replace(',', '');
 
 			console.log("Modified line after label: " +line);
 
@@ -157,7 +172,7 @@ function preParser(cpu, textArea) {
 
 				// If this has a [R4] value (only for store), it's using reg not memory so don't set.
 				// Load doesn't load from reg, only memory or value
-				if (!lineData[2].match(/\[r\d{1,}\]/)) {
+				if (!lineData[2].match(/\[r(\d{1,}|[a-f])\]/)) {
 					lineData[0] += "m";
 				}
 
@@ -176,7 +191,15 @@ function preParser(cpu, textArea) {
 
 		// Convert to numbers
 		for (var j=1; j<lineData.length; j++) {
-			lineData[j] = parseInt(lineData[j]);
+
+			if (typeof lineData[j] !== 'string') {
+			       continue;
+			}
+			if (lineData[j].match(/[a-f]/) && !lineData[j].match("0x") ) {
+				lineData[j] = parseInt("0x" + lineData[j]);
+			} else {
+				lineData[j] = parseInt(lineData[j]);
+			}
 		}
 
 
@@ -201,8 +224,10 @@ function loadProgram(id) {
 
 	var lines = preParser(cpu, textArea);
 	var text = lines.join("\n");
+	printError(id, "-------------------------------");
 	// for testing only:
-	//$("#program" +id +"output").append(text +"\n");
+	$("#program" +id +"output").append(text +"\n");
+	printError(id, "-------------------------------");
 
 	var code = new Uint8Array(128);
 	var codeCount = 0;

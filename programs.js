@@ -25,7 +25,7 @@ var programs = {
 		var programData = this.getProgram("loop");
 		$("#program0input").text(programData);
 
-		var programData = this.getProgram("loop");
+		var programData = this.getProgram("managler");
 		$("#program1input").text(programData);
 
 
@@ -45,6 +45,7 @@ var programs = {
 		"loop": "; error loading program",
 		"randomattack": "; error loading program",
 		"dtest": "; error loading program",
+		"managler": "; error loading program",
 
 
 	},
