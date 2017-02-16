@@ -37,11 +37,11 @@ td:hover {
 	color: red;
 }
 
-#tablecpu0controls {
+.player1 {
 	color: lightblue;
 }
 
-#tablecpu1controls {
+.player2 {
 	color: thistle;
 }
 
