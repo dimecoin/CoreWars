@@ -35,7 +35,6 @@ The objective of Core Wars is to write 0xFF ("ie. the bomb") into the other play
 * Clean up javascript console.
 
 ## bugs
-* load/jmp to label doesn't work.
 * label on same line as `addi` doesn't work.
 
 ### Done

@@ -40,7 +40,13 @@ var programs = {
 	data: {
 		"bot_slowpoke": "; error loading program",
 		"bot_randomattack": "; error loading program",
+
+		"bot_simplebomb": "; error loading program",
+		"bot_aggrobot3": "; error loading program",
+		"bot_randomattack2": "; error loading program",
+
 		"test_d": "; error loading program",
+		"test_jumper": "; error loading program",
 		"test_junk": "; error loading program",
 		"test_load": "; error loading program",
 		"test_managler": "; error loading program",

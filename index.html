@@ -628,12 +628,12 @@ load R5, [0x10]
 jmp START
 </textarea>
 
-
 <textarea id="program_test_d" style="display:none;">
 ;; random testing, changes a lot
 load R1,[0x02]
 load R4,0xFF
 </textarea>
+
 <textarea id="program_bot_randomattack" style="display:none;">
 ;; Random Attack
 ;; Randomly attacks a memory location on board
@@ -675,7 +675,6 @@ mungle:
 jmp Main
 </textarea>
 
-
 <textarea id="program_test_managler" style="display:none;">
 ;; Syntax Managler/Tester 
 ;; This is a good test of the parser/assembler
@@ -694,10 +693,189 @@ load   R7 , 7
 load RA,10
 starttwo: load RB, 11
 starthree:	load 	RC,    12
-startfour: load R1, 1
-jmp start ;;jmp
+load rd, 0x0d
+load re, e
+load rf, 15
+load r1, 00000001b
 
+jmp start ;;jmp
+</textarea>
+
+<textarea id="program_test_jumper" style="display:none;">
+;; Jmp tests
+start:
+load R1,1
+two: load R2, 2
+
+jmp two
+</textarea>
+
+<textarea id="program_bot_randomattack2" style="display:none;">
+;; Random Attack
+;; Randomly attacks a memory location on board
+;; Does NOT have logic to not attack ourselves, 
+
+;; (not random, but close enough)
+
+load R4,0xFF ; load the bomb into R4
+
+load R0, 0x0D
+load R5,0x00 ; load our starting location (for attack, not of our self)
+
+load R7, 0x1 ;; Increment by this.
+
+Main:
+
+	ror R5, 3 ; rotate right by n positions
+	xor R5,R5,R7 ; R5=R5^R6
+	
+
+	addi R5,R5,R7
+
+	load R0, 0x10
+	jmpEQ R5=R0, mungle
+
+	load R0, 0x0D
+	jmpEQ R5=R0, mungle
+
+	load R0, 0x12
+	jmpEQ R5=R0, mungle
+
+	
+	store R4,[R5]
+		
+jmp Main 
+
+mungle:
+	ror R7, 5
+jmp Main
+</textarea>
+
+<textarea id="program_bot_aggrobot3" style="display:none;">
+;; Aggro Bot.
+;; "Everyone has a plan until they get punched in the face" -- Mike Tyson.
+
+;; NOTE: ** This was a competition winning bot. **
+;; NOTE: This assumes starting location of 0x08 and using real addressing.
+
+
+;; This is a very aggressive bot (even though it looks overly simple to write)
+;; Not a lot of startup code, so it comes out swinging very soon (on second instruction), while other bots are most likely still loading registers!
+;; No condition or housekeeping code, so 1 instruction = 1 swing.  Can't swing faster than that!  
+;; Most other bots are going to be burning 2 or 3 instructions per swing.
+;; We have fairly large foot print, this has a counter intutive way of reducing size of space we need to attack!
+
+;; For defense:
+;; Best defense is a good offense.
+;; Code has no loops, so attacks have to land in front of our current PC location.
+;; If you hit our backside, that code won't get executaed again (unlike a program that loop).
+
+;; If you hit in front of us, it has to be close to our current location.
+;; Think of it this way, if an enemy  hits us 10 instructions ahead, we still have 10 attacks before we die.
+
+
+
+load R4,0xFF ; load the bomb into R4
+
+store R4, [0x98]
+store R4, [0xF8]
+store R4, [0xA2]
+store R4, [0x6C]
+
+store R4, [0xE8]
+store R4, [0xD8]
+store R4, [0xC8]
+store R4, [0x92]
+store R4, [0xB8]
+store R4, [0xA8]
+
+store R4, [0x88]
+store R4, [0x78]
+store R4, [0x68]
+store R4, [0x58]
+;store R4, [0x48]
+
+store R4, [0xF2]
+store R4, [0xE2]
+store R4, [0xD2]
+store R4, [0xC2]
+store R4, [0xB2]
+
+store R4, [0x82]
+store R4, [0x72]
+store R4, [0x62]
+store R4, [0x52]
+;store R4, [0x42]
+
+
+store R4, [0xFC]
+store R4, [0xEC]
+store R4, [0xDC]
+store R4, [0xCC]
+store R4, [0xBC]
+store R4, [0xAC]
+store R4, [0x9C]
+store R4, [0x8C]
+store R4, [0x7C]
+
+store R4, [0x5C]
+;store R4, [0x4C]
 </textarea>
 
 
+<textarea id="program_bot_simplebomb" style="display:none;">
+; This is a simple "linear" bomb.  We start at address X and move forward N steps hoping to hit something.
 
+;; Code tries to be small as possiable to minimize our attack foot print.
+
+;; Our step should be around what we expect "average size" of enemy program to be.  
+;; If we step to much, we could overstep and miss, but if we step to little we waste time and increase our risk.
+
+;; Weakness: One flaw, is we could easily hit ourselves. 
+;; To minimize code size we don't check for this.
+;; If we do hit ourselves, it means we have "reasonable" searched the entire memory space,... and burned a lot of cycles...
+;; So, we will probably be dead anyways, by the time this becomes a problem.
+
+load R4,0xFF ; load the bomb into R4
+
+;; Starting location should be address of were our program ends.
+;; (Most likely, but not sure if instructor would put too programs "back to back", seems unlikely)
+
+;; ( Our Address + Program size) - Step size  : this would be good starting location for R5
+;; we take away step size since we increment location in loop.
+;; TODO: change location when we get our starting location from instructor.
+load R5,0x08 ; load our starting location.
+
+;; Step is the amount of addresses we will jump from current location and bomb.
+;; If step is too small, we will waste a lot of time searching and make us more vunerable to attack.
+;; If step is too big, we will "jump over" the enemies program.
+;; Step should be "best guess" on what we expect attacker programs size to be.
+
+;; Our program size is 11 [x2] bytes and we are (hopefully!) a very tiny program.
+;; Best guess, would be about 11 to 22 for other programs, so let's say 13?
+;; But if they preload data like us, hitting the startup code doesn't win, so let's subtract 3 giving us 10.
+;; (255-11)/10 = 24 steps to bomb the "entire" board, excluding ourself.  Average win will be about ~12 steps 
+;; (3 instructions per step, so roughly 26 instructions for avg win).  
+;; Seems like a lot, but hope that is fast enough before they get us!)
+
+load R6, 0x4 ;; our step.
+;; attack only on even!
+
+Main:
+
+	addi R5, R5, R6 ; Add step (R6) to current location (R5) and store in R5
+	
+	store R4,[R5]  ; Send up the bomb.  Put Bomb (R4) into current location (R5)
+	;; if we could do immediate store we could save 2 bytes, but don't see that supported.
+
+	jmp Main 
+
+
+;; This function sends our bomb then jumps back to Main.
+;; R5 should be set before calling, this is is memory address you want to bomb.
+;; COMMENTED OUT: subfunctions take extra 2 bytes, do it inline.  Keeping for reference.
+;Bomb:
+;	store R4,[R5]
+;	jmp Main
+
+</textarea>
