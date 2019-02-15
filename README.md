@@ -3,9 +3,9 @@
 Dual CPU Simulator based on syntax of Simple Simulator and using 'A Simple Machine Language' instruction set from Appendix C of "Compter Science an Overview" 12th.  This is for playing "Core Wars".
 
 
-Live Demo: http://dimeproject.com/CoreWars
+Live Demo: https://dimecoin.github.io/CoreWars/index.html
 
-CoreWars Instruction Set:  http://dimeproject.com/CoreWars/codes.html
+CoreWars Instruction Set: https://dimecoin.github.io/CoreWars/codes.html
 
 ## Core Wars
 
